@@ -13,12 +13,15 @@ class ControllerTestController extends AbstractController
     public function index()
     {
         return $this->render('controller_test/index.html.twig', [
-            'controller_name' => 'ControllerTestController',
+            'controller_name' => 'toi',
         ]);
     }
 
     /**
-     * @Route("/{hello}/{nom}", name="bjr")
+     * @Route("/{hello}/{nom}", name="bjr",
+     * requirements={
+     * "nom" = "alice|bob"
+     * })
      */
     public function hello($nom)
     {

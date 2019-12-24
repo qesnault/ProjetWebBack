@@ -10,7 +10,7 @@
 
 <div class="example-wrapper">
     <h1>Hello {{ controller_name }}! ✅</h1>
-
+    {% block contenue %} {{ parent() }} {% endblock %}
     <a href="{{path('bjr',{'hello':'hello', 'nom':'alice'}, 'relative = true')}}">Ici la page pour alice</a>
     <a href="{{path('bjr',{'hello':'hello', 'nom':'bob'}, 'relative = true')}}">Ici la page pour bob</a>
 </div>
