@@ -25,7 +25,8 @@
             </tr>
             <tr>
                 <th>Poster</th>
-                <td>{{ series.poster }}</td>
+                <td><img src="{{series.id}}/image" alt="image du film"/></td>
+                <td><img src="data:image/jpeg;base64,{{ series.poster }}" alt="image du film"/></td>
             </tr>
             <tr>
                 <th>Director</th>

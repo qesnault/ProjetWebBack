@@ -47,7 +47,7 @@ class Series
     /**
      * @var string|null
      *
-     * @ORM\Column(name="poster", type="blob", length=0, nullable=true)
+     * @ORM\Column(name="poster", type="string", length=0, nullable=true)
      */
     private $poster;
 

@@ -94,4 +94,17 @@ class SeriesController extends AbstractController
 
         return $this->redirectToRoute('series_index');
     }
+
+    /**
+     * @Route("/{id}/image", name="series_image", methods={"GET"})
+     */
+    public function afficherImage(Series $series) : Response
+    {
+        $response = $this->render('series/afficherImage.html.twig', [
+            'series' => $series
+        ]);
+        $response->headers->set('Content-Type', 'image/jpeg');
+        $response->send();
+        return $response;
+    }
 }
