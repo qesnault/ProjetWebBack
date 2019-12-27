@@ -9,7 +9,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
 /**
  * @Route("/series")
  */
@@ -117,5 +116,23 @@ class SeriesController extends AbstractController
         $response->headers->set('Content-Type', 'image/jpeg');
         $response->send();
         return $response;
+    }
+
+    /**
+     * @Route("/{recherche}", name="series_recherche", methods={"GET"},
+     * requirements={
+     *  "pageNumber" = "\d+"
+     * }, defaults={"pageNumber" = "1"})
+     */
+    public function recherche(int $pageNumber, string $recherche): Response
+    {
+        $series = $this->getDoctrine()
+            ->getRepository(Series::class)
+            ->findBy(array('title' => $recherche), null, 10, ($pageNumber*10)-10);
+
+        return $this->render('series/index.html.twig', [
+            'series' => $series,
+            'nbPage' => $pageNumber
+        ]);
     }
 }

@@ -53,7 +53,7 @@ class UserController extends AbstractController
         if ($request->isMethod('POST')) {
           
           $form->handleRequest($request);
-    
+          $user->setRegisterDate(new \DateTime());
           if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
