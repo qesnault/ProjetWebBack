@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Season;
 use App\Entity\Series;
 use App\Form\SeriesType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,7 +22,7 @@ class SeriesController extends AbstractController
     {
         $series = $this->getDoctrine()
             ->getRepository(Series::class)
-            ->findAll();
+            ->findBy(array(), null, 10, 0*10);
 
         return $this->render('series/index.html.twig', [
             'series' => $series,
@@ -56,8 +57,14 @@ class SeriesController extends AbstractController
      */
     public function show(Series $series): Response
     {
+        $seasons = $this->getDoctrine()
+            ->getRepository(Season::class)
+            ->findBy(array('series' => $series))
+        ;
+
         return $this->render('series/show.html.twig', [
             'series' => $series,
+            'seasons' => $seasons
         ]);
     }
 

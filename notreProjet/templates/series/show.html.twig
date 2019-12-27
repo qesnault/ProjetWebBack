@@ -43,12 +43,20 @@
                 <td>{{ series.awards }}</td>
             </tr>
             <tr>
-                <th>YearStart</th>
+                <th>YearStart : </th>
                 <td>{{ series.yearStart }}</td>
             </tr>
             <tr>
-                <th>YearEnd</th>
+                <th>YearEnd : </th>
                 <td>{{ series.yearEnd }}</td>
+            </tr>
+            <tr>
+                <th>Saisons : </th>
+                <td>
+                    {% for i in 1..seasons|length %}
+                        {{ i }}
+                    {% endfor %}
+                </td>
             </tr>
         </tbody>
     </table>
