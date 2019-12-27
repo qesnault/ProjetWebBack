@@ -16,16 +16,20 @@ use Symfony\Component\Routing\Annotation\Route;
 class SeriesController extends AbstractController
 {
     /**
-     * @Route("/", name="series_index", methods={"GET"})
+     * @Route("/{pageNumber}", name="series_index", methods={"GET"},
+     * requirements={
+     *  "pageNumber" = "\d+"
+     * }, defaults={"pageNumber" = "1"})
      */
-    public function index(): Response
+    public function index(int $pageNumber): Response
     {
         $series = $this->getDoctrine()
             ->getRepository(Series::class)
-            ->findBy(array(), null, 10, 0*10);
+            ->findBy(array(), null, 10, ($pageNumber*10)-10);
 
         return $this->render('series/index.html.twig', [
             'series' => $series,
+            'nbPage' => $pageNumber
         ]);
     }
 
@@ -53,7 +57,7 @@ class SeriesController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="series_show", methods={"GET"})
+     * @Route("/recherche/{id}", name="series_show", methods={"GET"})
      */
     public function show(Series $series): Response
     {

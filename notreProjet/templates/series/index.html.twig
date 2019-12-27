@@ -11,8 +11,6 @@
                 <th>Title</th>
                 <th>Plot</th>
                 <th>Poster</th>
-                <th>Awards</th>
-                <th>YearStart</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -22,20 +20,22 @@
                 <td>{{ series.title }}</td>
                 <td>{{ series.plot }}</td>
                 <td>{{ series.poster }}</td>
-                <td>{{ series.awards }}</td>
-                <td>{{ series.yearStart }}</td>
                 <td>
-                    <a href="{{ path('series_show', {'id': series.id}) }}">show</a>
-                    <a href="{{ path('series_edit', {'id': series.id}) }}">edit</a>
+                    <a href="{{ path('series_show', {'recherche' : 'recherche', 'id': series.id}, 'relative = true') }}">Voir plus</a>
+                    <a href="{{ path('series_edit', {'recherche' : 'recherche', 'id': series.id}) }}">edit</a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="11">no records found</td>
+                <td colspan="11">Pas de série trouvé</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
-
-    <a href="{{ path('series_new') }}">Create new</a>
+    {% if nbPage > 1 %}
+        <a href="/series/{{ nbPage-1 }}">Page précédente</a>
+    {% endif %}
+    {% if series|length == 10 %}
+    <a href="/series/{{ nbPage+1 }}">Page suivante</a>
+    {% endif %}
 {% endblock %}
