@@ -1,41 +1,43 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Series index{% endblock %}
+{% block title %}Series index
+{% endblock %}
 
 {% block body %}
-    <h1>Series index</h1>
+	<h1>Series index</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Plot</th>
-                <th>Poster</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for series in series %}
-            <tr>
-                <td>{{ series.title }}</td>
-                <td>{{ series.plot }}</td>
-                <td>{{ series.poster }}</td>
-                <td>
-                    <a href="{{ path('series_show', {'id': series.id}, 'relative = true') }}">Voir plus</a>
-                    <a href="{{ path('series_edit', {'id': series.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="11">Pas de série trouvé</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    {% if nbPage > 1 %}
-        <a href="/series/{{ nbPage-1 }}">Page précédente</a>
-    {% endif %}
-    {% if series|length == 10 %}
-    <a href="/series/{{ nbPage+1 }}">Page suivante</a>
-    {% endif %}
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Title</th>
+				<th>Plot</th>
+				<th>Poster</th>
+				<th>actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for series in series %}
+				<tr>
+					<td>{{ series.title }}</td>
+					<td>{{ series.plot }}</td>
+					<td>{{ series.poster }}</td>
+					<td>
+						<a href="{{ path('series_show', {'id': series.id}, 'relative = true') }}">Voir plus</a>
+						<a href="{{ path('series_edit', {'id': series.id}) }}">edit</a>
+					</td>
+				</tr>
+			{% else %}
+				<tr>
+					<td colspan="11">Pas de série trouvé</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{% if nbPage > 1 %}
+		<a href="/series/{{ nbPage-1 }}">Page précédente</a>
+	{% endif %}
+        Page {{ nbPage }}
+	{% if series|length == 10 %}
+		<a href="/series/{{ nbPage+1 }}">Page suivante</a>
+	{% endif %}
 {% endblock %}

@@ -25,7 +25,7 @@ class SeriesController extends AbstractController
     {
         $series = $this->getDoctrine()
             ->getRepository(Series::class)
-            ->findBy(array(), null, 10, ($pageNumber*10)-10);
+            ->findBy(array(), array('id' => 'asc'), 10, ($pageNumber*10)-10);
 
         return $this->render('series/index.html.twig', [
             'series' => $series,
@@ -114,8 +114,7 @@ class SeriesController extends AbstractController
         $response = $this->render('series/afficherImage.html.twig', [
             'series' => $series
         ]);
-        $response->headers->set('Content-Type', 'image/jpeg');
-        $response->send();
+        $response->headers->set('Content-Type', 'text/html');
         return $response;
     }
 
