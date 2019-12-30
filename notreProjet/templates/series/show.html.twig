@@ -1,69 +1,104 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Series{% endblock %}
+{% block title %}Series
+{% endblock %}
 
 {% block body %}
-    <h1>Series</h1>
+	<h1>Series</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ series.id }}</td>
-            </tr>
-            <tr>
-                <th>Title</th>
-                <td>{{ series.title }}</td>
-            </tr>
-            <tr>
-                <th>Plot</th>
-                <td>{{ series.plot }}</td>
-            </tr>
-            <tr>
-                <th>Lien vers la fiche IMDB</th>
-                <td><a href="https://www.imdb.com/title/{{ series.imdb }}">Cliquez ici !</a></td>
-            </tr>
-            <tr>
-                <th>Poster</th>
-                <td><img src="{{series.id}}/image" alt="image du film"/></td>
-                <td><img src="data:image/jpeg;base64,{{ series.poster }}" alt="image du film"/></td>
-            </tr>
-            <tr>
-                <th>Director</th>
-                <td>{{ series.director }}</td>
-            </tr>
-            <tr>
-                <th>YoutubeTrailer</th>
-                <td>
-                    <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ series.youtubeTrailer }}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                </td>
-            </tr>
-            <tr>
-                <th>Awards</th>
-                <td>{{ series.awards }}</td>
-            </tr>
-            <tr>
-                <th>YearStart : </th>
-                <td>{{ series.yearStart }}</td>
-            </tr>
-            <tr>
-                <th>YearEnd : </th>
-                <td>{{ series.yearEnd }}</td>
-            </tr>
-            <tr>
-                <th>Saisons : </th>
-                <td>
-                    {% for i in 1..seasons|length %}
-                        <a href="{{path('index_episode_show',{'id': series.id, 'numSaison': i })}}">Saison {{ i }}</br></a>
-                    {% endfor %}
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-    <a href="{{ path('series_index') }}">Retour à la liste des séries</a>
-
-    <a href="{{ path('series_edit', {'id': series.id}) }}">edit</a>
-
-    {{ include('series/_delete_form.html.twig') }}
-{% endblock %}
+	<table class="table">
+		<tbody>
+			<tr>
+				<th>Id</th>
+				<td>{{ series.id }}</td>
+			</tr>
+			<tr>
+				<th>Title</th>
+				<td>{{ series.title }}</td>
+			</tr>
+			<tr>
+				<th>Plot</th>
+				<td>{{ series.plot }}</td>
+			</tr>
+			<tr>
+				<th>Lien vers la fiche IMDB</th>
+				<td>
+					<a href="https://www.imdb.com/title/{{ series.imdb }}">Cliquez ici !</a>
+				</td>
+			</tr>
+			<tr>
+				<th>Poster</th>
+				<td><img src="{{series.id}}/image" alt="image du film"/></td>
+				<td><img src="data:image/jpeg;base64,{{ series.poster }}" alt="image du film"/></td>
+			</tr>
+			{% if series.director %}
+				<tr>
+					<th>Director</th>
+					<td>{{ series.director }}</td>
+				</tr>
+			{% endif %}
+			{% if series.actor %}
+				<tr>
+					<th>Actors :</th>
+					<td>
+						{% for act in series.actor %}
+							{{ act.name }} |
+						{% endfor %}
+					</td>
+				</tr>
+			{% endif %}
+            {% if series.country %}
+				<tr>
+					<th>Country :</th>
+					<td>
+						{% for count in series.country %}
+							{{ count.name }} 
+						{% endfor %}
+					</td>
+				</tr>
+			{% endif %}
+            {% if series.genre %}
+				<tr>
+					<th>Genre :</th>
+					<td>
+						{% for count in series.genre %}
+							{{ count.name }} 
+						{% endfor %}
+					</td>
+				</tr>
+			{% endif %}
+			<tr>
+				<th>YoutubeTrailer</th>
+				<td>
+					<iframe width="560" height="315" src="https://www.youtube.com/embed/{{ series.youtubeTrailer }}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+				</td>
+			</tr>
+			<tr>
+				<th>Awards</th>
+				<td>{{ series.awards }}</td>
+			</tr>
+			<tr>
+				<th>YearStart :
+				</th>
+				<td>{{ series.yearStart }}</td>
+			</tr>
+			{% if series.yearEnd %}
+				<tr>
+					<th>YearEnd :
+					</th>
+					<td>{{ series.yearEnd }}</td>
+				</tr>
+			{% endif %}
+			<tr>
+				<th>Saisons :
+				</th>
+				<td>
+					{% for i in 1..seasons|length %}
+						<a href="{{path('index_episode_show',{'id': series.id, 'numSaison': i })}}">Saison
+							{{ i }}</br>
+					</a>
+				{% endfor %}
+			</tr>
+		</tbody>
+	</td>
+</tr></tbody></table><a href="{{ path('series_index') }}">Retour à la liste des séries</a><a href="{{ path('series_edit', {'id': series.id}) }}">edit</a>{{ include('series/_delete_form.html.twig') }}{% endblock %}

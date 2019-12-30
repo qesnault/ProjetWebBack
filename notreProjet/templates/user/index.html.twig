@@ -11,7 +11,6 @@
                 <th>Id</th>
                 <th>Name</th>
                 <th>Email</th>
-                <th>Password</th>
                 <th>RegisterDate</th>
                 <th>Admin</th>
                 <th>UserId</th>
@@ -24,22 +23,21 @@
                 <td>{{ user.id }}</td>
                 <td>{{ user.name }}</td>
                 <td>{{ user.email }}</td>
-                <td>{{ user.password }}</td>
                 <td>{{ user.registerDate ? user.registerDate|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ user.admin ? 'Yes' : 'No' }}</td>
                 <td>{{ user.userId }}</td>
                 <td>
-                    <a href="{{ path('user_show', {'id': user.id}) }}">show</a>
-                    <a href="{{ path('user_edit', {'id': user.id}) }}">edit</a>
+                    <a href="{{ path('user_show', {'id': user.id}) }}">Plus de détail</a>
+                    <a href="{{ path('user_edit', {'id': user.id}) }}">Modifier</a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="8">no records found</td>
+                <td colspan="8">Aucun utilisateur</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('user_new') }}">Create new</a>
+    <a href="{{ path('user_new') }}">S'inscrire</a>
 {% endblock %}

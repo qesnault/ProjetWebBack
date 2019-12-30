@@ -15,12 +15,12 @@ class UserType extends AbstractType
             ->add('name')
             ->add('email')
             ->add('password')
-            ->add('registerDate')
+            //->add('registerDate')
             ->add('admin')
-            ->add('userId')
-            ->add('country')
-            ->add('episode')
-            ->add('series')
+            //->add('userId')
+            //->add('country')
+            //->add('episode')
+            //->add('series')
         ;
     }
 
