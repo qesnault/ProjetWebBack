@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}episode{% endblock %}
+
+{% block body %}
+    <h1>Episode {{ episode.number}} de la saison {{ season.number }} de {{ series.title }} </h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id :</th>
+                <td>{{ episode.id }}</td>
+            </tr>
+            <tr>
+                <th>Title :</th>
+                <td>{{ episode.title }}</td>
+            </tr>
+            <tr>
+                <th>Date :</th>
+                <td>{{ episode.date|date("m/d/Y") }}</td>
+            </tr>
+            <tr>
+                <th>Lien versplot la fiche IMDB :</th>
+                <td><a href="https://www.imdb.com/title/{{ episode.imdb }}">Cliquez ici !</a></td>
+            </tr>
+            <tr>
+                <th>imdb rating : </th>
+                <td> {{ episode.imdbrating }} </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{path('index_episode_show',{'id': series.id, 'numSaison': season.id })}}"> Retour au choix de l'épisode</br></a>
+
+    <a href="{{ path('series_show', {'id': series.id}) }}">Retour à la série</br></a>
+
+    <a href="{{ path('series_index') }}">Retour à la liste des séries</br></a>
+
+{% endblock %}

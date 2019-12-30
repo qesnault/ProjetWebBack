@@ -34,7 +34,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/inscription", name="user_new", methods={"GET","POST"})
+     * @Route("/register", name="user_new", methods={"GET","POST"})
      */
     public function new(Request $request): Response
     {

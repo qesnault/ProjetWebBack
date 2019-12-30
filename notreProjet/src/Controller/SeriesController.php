@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Season;
+use App\Entity\Episode;
 use App\Entity\Series;
 use App\Form\SeriesType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -133,6 +134,50 @@ class SeriesController extends AbstractController
         return $this->render('series/index.html.twig', [
             'series' => $series,
             'nbPage' => $pageNumber
+        ]);
+    }
+
+    /**
+     * @Route("/recherche/{id}/Saison{numSaison}", name="index_episode_show", methods={"GET"})
+     */
+    public function indexEpisode(Series $serie, int $numSaison): Response
+    {
+        $season = $this->getDoctrine()
+            ->getRepository(Season::class)
+            ->findOneBy(array('series' => $serie, 'number' => $numSaison))
+        ;
+
+        $episodes = $this->getDoctrine()
+            ->getRepository(Episode::class)
+            ->findBy(array('season' => $season), array('number' => 'asc'))
+        ;
+
+        return $this->render('series/afficherIndexEpisode.html.twig', [
+            'series' => $serie,
+            'season' => $season,
+            'episodes' => $episodes
+        ]);
+    }
+
+    /**
+     * @Route("/recherche/{id}/{idSaison}/{idEp}", name="episode_show", methods={"GET"})
+     */
+    public function showEpisode(Series $serie, int $idSaison, int $idEp): Response
+    {
+        $season = $this->getDoctrine()
+            ->getRepository(Season::class)
+            ->findOneBy(array('id' => $idSaison))
+        ;
+
+        $episode = $this->getDoctrine()
+            ->getRepository(Episode::class)
+            ->findOneBy(array('id' => $idEp))
+        ;
+
+        return $this->render('series/afficherEpisode.html.twig', [
+            'series' => $serie,
+            'season' => $season,
+            'episode' => $episode
         ]);
     }
 }
