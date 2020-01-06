@@ -1,3 +1,7 @@
-{% block photo %}
-    {{ series.poster }}
+{% extends 'base.html.twig' %}
+{% block title %} image {% endblock %}
+{% block body %}
+    {% for image in images %}
+        <img src="data:image/jpeg;base64,{{ image.poster }}">
+    {% endfor %}
 {% endblock %}

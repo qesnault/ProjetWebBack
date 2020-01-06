@@ -28,8 +28,11 @@
 			</tr>
 			<tr>
 				<th>Poster</th>
-				<td><img src="{{series.id}}/image" alt="image du film"/></td>
-				<td><img src="data:image/jpeg;base64,{{ series.poster }}" alt="image du film"/></td>
+				<td>
+					{% for image in images %}
+						<img src="data:image/jpeg;base64,{{ image.poster }}">
+					{% endfor %}
+				</td>
 			</tr>
 			{% if series.director %}
 				<tr>
@@ -42,27 +45,28 @@
 					<th>Actors :</th>
 					<td>
 						{% for act in series.actor %}
-							{{ act.name }} |
+							{{ act.name }}
+							|
 						{% endfor %}
 					</td>
 				</tr>
 			{% endif %}
-            {% if series.country %}
+			{% if series.country %}
 				<tr>
 					<th>Country :</th>
 					<td>
 						{% for count in series.country %}
-							{{ count.name }} 
+							{{ count.name }}
 						{% endfor %}
 					</td>
 				</tr>
 			{% endif %}
-            {% if series.genre %}
+			{% if series.genre %}
 				<tr>
 					<th>Genre :</th>
 					<td>
 						{% for count in series.genre %}
-							{{ count.name }} 
+							{{ count.name }}
 						{% endfor %}
 					</td>
 				</tr>

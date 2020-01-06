@@ -10,6 +10,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
+
 /**
  * @Route("/series")
  */
@@ -25,7 +28,11 @@ class SeriesController extends AbstractController
     {
         $series = $this->getDoctrine()
             ->getRepository(Series::class)
-            ->findBy(array(), array('id' => 'asc'), 10, ($pageNumber*10)-10);
+            ->findBy(array(), array('id' => 'asc'), 10, ($pageNumber * 10) - 10);
+
+        foreach ($series as $key => $value) {
+            $value->setPoster(base64_encode(stream_get_contents($value->getPoster())));
+        }
 
         return $this->render('series/index.html.twig', [
             'series' => $series,
@@ -63,12 +70,21 @@ class SeriesController extends AbstractController
     {
         $seasons = $this->getDoctrine()
             ->getRepository(Season::class)
-            ->findBy(array('series' => $series))
-        ;
+            ->findBy(array('series' => $series));
+
+        $image = $this->getDoctrine()
+            ->getManager()
+            ->getRepository(Series::class)
+            ->findBy(array('id' => $series));
+
+        foreach ($image as $key => $value) {
+            $value->setPoster(base64_encode(stream_get_contents($value->getPoster())));
+        }
 
         return $this->render('series/show.html.twig', [
             'series' => $series,
-            'seasons' => $seasons
+            'seasons' => $seasons,
+            'images' => $image
         ]);
     }
 
@@ -97,7 +113,7 @@ class SeriesController extends AbstractController
      */
     public function delete(Request $request, Series $series): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$series->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $series->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($series);
             $entityManager->flush();
@@ -109,13 +125,20 @@ class SeriesController extends AbstractController
     /**
      * @Route("/{id}/image", name="series_image", methods={"GET"})
      */
-    public function afficherImage(Series $series) : Response
+    public function afficherImage(Series $series): Response
     {
-        $response = $this->render('series/afficherImage.html.twig', [
-            'series' => $series
+        $image = $this->getDoctrine()
+            ->getManager()
+            ->getRepository(Series::class)
+            ->findBy(array('id' => $series));
+
+        foreach ($image as $key => $value) {
+            $value->setPoster(base64_encode(stream_get_contents($value->getPoster())));
+        }
+
+        return $this->render('series/afficherImage.html.twig', [
+            'images' => $image
         ]);
-        $response->headers->set('Content-Type', 'text/html');
-        return $response;
     }
 
     /**
@@ -128,7 +151,7 @@ class SeriesController extends AbstractController
     {
         $series = $this->getDoctrine()
             ->getRepository(Series::class)
-            ->findBy(array('title' => $recherche), null, 10, ($pageNumber*10)-10);
+            ->findBy(array('title' => $recherche), null, 10, ($pageNumber * 10) - 10);
 
         return $this->render('series/index.html.twig', [
             'series' => $series,
@@ -143,13 +166,11 @@ class SeriesController extends AbstractController
     {
         $season = $this->getDoctrine()
             ->getRepository(Season::class)
-            ->findOneBy(array('series' => $serie, 'number' => $numSaison))
-        ;
+            ->findOneBy(array('series' => $serie, 'number' => $numSaison));
 
         $episodes = $this->getDoctrine()
             ->getRepository(Episode::class)
-            ->findBy(array('season' => $season), array('number' => 'asc'))
-        ;
+            ->findBy(array('season' => $season), array('number' => 'asc'));
 
         return $this->render('series/afficherIndexEpisode.html.twig', [
             'series' => $serie,
@@ -165,13 +186,11 @@ class SeriesController extends AbstractController
     {
         $season = $this->getDoctrine()
             ->getRepository(Season::class)
-            ->findOneBy(array('id' => $idSaison))
-        ;
+            ->findOneBy(array('id' => $idSaison));
 
         $episode = $this->getDoctrine()
             ->getRepository(Episode::class)
-            ->findOneBy(array('id' => $idEp))
-        ;
+            ->findOneBy(array('id' => $idEp));
 
         return $this->render('series/afficherEpisode.html.twig', [
             'series' => $serie,
