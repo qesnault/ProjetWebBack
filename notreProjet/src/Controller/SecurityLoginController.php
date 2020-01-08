@@ -15,7 +15,7 @@ class SecurityLoginController extends AbstractController
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
         if ($this->getUser()) {
-            return $this->redirectToRoute('user_show', array('id' => $this->getUser()->getId()));
+            return $this->forward('App\Controller\UserController::show', ['user' => $this->getUser()->getId()]);
         }
 
         // get the login error if there is one

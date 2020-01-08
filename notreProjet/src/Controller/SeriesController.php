@@ -33,7 +33,7 @@ class SeriesController extends AbstractController
         foreach ($series as $key => $value) {
             $value->setPoster(base64_encode(stream_get_contents($value->getPoster())));
         }
-
+    
         return $this->render('series/index.html.twig', [
             'series' => $series,
             'nbPage' => $pageNumber
@@ -79,6 +79,10 @@ class SeriesController extends AbstractController
 
         foreach ($image as $key => $value) {
             $value->setPoster(base64_encode(stream_get_contents($value->getPoster())));
+        }
+
+        if($this->getUser()){
+            //Si l'utilisateur est connecté
         }
 
         return $this->render('series/show.html.twig', [

@@ -61,7 +61,7 @@ class UserController extends AbstractController
           $user->setRegisterDate(new \DateTime());
           if ($form->isSubmitted() && $form->isValid()) {
 
-            //encode mdp
+            //encodage mdp
             $pass = $passwordEncoder->encodePassword($user, $user->getPassword());
             $user->setPassword($pass);
 

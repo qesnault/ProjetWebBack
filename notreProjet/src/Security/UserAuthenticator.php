@@ -18,6 +18,8 @@ use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
+use Symfony\Component\Routing\Annotation\Route;
+
 
 class UserAuthenticator extends AbstractFormLoginAuthenticator
 {
@@ -87,7 +89,7 @@ class UserAuthenticator extends AbstractFormLoginAuthenticator
         }
 
         // For example : return new RedirectResponse($this->urlGenerator->generate('some_route'));
-        return new RedirectResponse('user_show');
+        return new RedirectResponse($this->urlGenerator->generate('user_index'));
     }
 
     protected function getLoginUrl()
