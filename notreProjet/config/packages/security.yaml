@@ -18,8 +18,7 @@ security:
                 # where to redirect after logout
                 # target: app_any_route
     encoders:
-        App\Entity\User:
-            algorithm: 'auto'
+        App\Entity\User: bcrypt
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }

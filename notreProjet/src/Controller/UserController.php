@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Symfony\Component\Security\Core\User\UserInterface;
 use App\Entity\User;
 use App\Form\UserType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -10,10 +11,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 /**
  * @Route("/")
  */
@@ -36,28 +37,41 @@ class UserController extends AbstractController
     /**
      * @Route("/register", name="user_new", methods={"GET","POST"})
      */
-    public function new(Request $request): Response
+    public function new(Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
     {
         $user = new User();
-
     
         // On ajoute les champs de l'entité que l'on veut à notre formulaire
-        $form = $this->get('form.factory')->createBuilder(FormType::class, $user)
+        $form = $this->get('form.factory')->createBuilder(UserType::class, $user)
             ->add('name',      TextType::class)
             ->add('email',     EmailType::class)
-            ->add('password',  PasswordType::class)
-            ->add('save',      SubmitType::class)
+            ->add('password', RepeatedType::class, array(
+                'type' => PasswordType::class,
+                'first_options'  => array('label' => 'Mot de passe'),
+                'second_options' => array('label' => 'Répeter le mot de passe'),
+            ))
+            //->add('password',  PasswordType::class)
             ->getForm()
         ;
 
         if ($request->isMethod('POST')) {
           
+        
           $form->handleRequest($request);
           $user->setRegisterDate(new \DateTime());
-          if ($form->isValid()) {
+          if ($form->isSubmitted() && $form->isValid()) {
+
+            //encode mdp
+            $pass = $passwordEncoder->encodePassword($user, $user->getPassword());
+            $user->setPassword($pass);
+
+            //Sauvegarde de user
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
+
+            //Ici on pourra ajouter par exemple un envoi de mail 
+            //ou un message flash pour dire qu'on esr bien enregistre
         
             return $this->redirectToRoute('user_show', array('id' => $user->getId()));
           }
