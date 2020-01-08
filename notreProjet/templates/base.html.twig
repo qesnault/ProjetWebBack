@@ -1,13 +1,23 @@
+
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Notre projet{% endblock %}</title>
+        <title>{% block title %}Our Project - Home{% endblock %}</title>
+        {% block stylesheet %}<link rel="stylesheet" type="text/css" href="{{ asset('styleSheets/base.css') }}">{% endblock %}
     </head>
     <body>
+        {% block navbar %}
+            {% include 'navbar.html.twig' %}
+        {% endblock %}
         {% block body %}
-            {% block contenue %}
-                <p>Ici va être le contenue de notre projet</p>
+
+            {% block presentation %}
+            <div class="content">
+                <h1>Website referencing series</h1>
+                <p>Learning web developpment, we had a project whitch consists on creating a website using a database gathering informations on series.</p>
+                <p>This is the result of this project</p>
+            </div>
             {% endblock %}
         {% endblock %}
     </body>
