@@ -1,52 +1,52 @@
 # Cache and logs (Symfony2)
-/app/cache/*
-/app/logs/*
-!app/cache/.gitkeep
-!app/logs/.gitkeep
+/notreProjet/app/cache/*
+/notreProjet/app/logs/*
+!notreProjet/app/cache/.gitkeep
+!notreProjet/app/logs/.gitkeep
 
 # Email spool folder
-/app/spool/*
+/notreProjet/app/spool/*
 
 # Cache, session files and logs (Symfony3)
-/var/cache/*
-/var/logs/*
-/var/sessions/*
-!var/cache/.gitkeep
-!var/logs/.gitkeep
-!var/sessions/.gitkeep
+/notreProjet/var/cache/*
+/notreProjet/var/logs/*
+/notreProjet/var/sessions/*
+!notreProjet/var/cache/.gitkeep
+!notreProjet/var/logs/.gitkeep
+!notreProjet/var/sessions/.gitkeep
 
 # Logs (Symfony4)
-/var/log/*
-!var/log/.gitkeep
+/notreProjet/var/log/*
+!notreProjet/var/log/.gitkeep
 
 # Parameters
-/app/config/parameters.yml
-/app/config/parameters.ini
+/notreProjet/app/config/parameters.yml
+/notreProjet/app/config/parameters.ini
 
 # Managed by Composer
-/app/bootstrap.php.cache
-/var/bootstrap.php.cache
-/bin/*
-!bin/console
-!bin/symfony_requirements
-/vendor/
+/notreProjet/app/bootstrap.php.cache
+/notreProjet/var/bootstrap.php.cache
+/notreProjet/bin/*
+!notreProjet/bin/console
+!notreProjet/bin/symfony_requirements
+/notreProjet/vendor/
 
 # Assets and user uploads
-/web/bundles/
-/web/uploads/
+/notreProjet/web/bundles/
+/notreProjet/web/uploads/
 
 # PHPUnit
-/app/phpunit.xml
-/phpunit.xml
+/notreProjet/app/phpunit.xml
+/notreProjet/phpunit.xml
 
 # Build data
-/build/
+/notreProjet/build/
 
 # Composer PHAR
-/composer.phar
+/notreProjet/composer.phar
 
 # Backup entities generated with doctrine:generate:entities command
 **/Entity/*~
 
 # Embedded web-server pid file
-/.web-server-pid
+/notreProjet/.web-server-pid
