@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 
@@ -19,24 +20,27 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 class SeriesController extends AbstractController
 {
     /**
-     * @Route("/{pageNumber}", name="series_index", methods={"GET"},
-     * requirements={
-     *  "pageNumber" = "\d+"
-     * }, defaults={"pageNumber" = "1"})
+     * @Route("/", name="series_index", methods={"GET"})
      */
-    public function index(int $pageNumber): Response
+    public function index(PaginatorInterface $paginator,  Request $request): Response
     {
         $series = $this->getDoctrine()
+            ->getManager()
             ->getRepository(Series::class)
-            ->findBy(array(), array('id' => 'asc'), 10, ($pageNumber * 10) - 10);
+            ->findBy(array(), array('id' => 'asc'));
+
+        $pagination = $paginator->paginate(
+            $series,
+            $request->query->getInt('page', 1), /*page number*/
+            10 /*limite par page*/
+        );
 
         foreach ($series as $key => $value) {
             $value->setPoster(base64_encode(stream_get_contents($value->getPoster())));
         }
     
         return $this->render('series/index.html.twig', [
-            'series' => $series,
-            'nbPage' => $pageNumber
+            'series' => $pagination
         ]);
     }
 
