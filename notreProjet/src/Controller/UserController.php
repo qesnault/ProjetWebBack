@@ -126,4 +126,17 @@ class UserController extends AbstractController
 
         return $this->redirectToRoute('user_index');
     }
+
+    /**
+     * @Route("/informations", name="user_log_show", methods={"GET"})
+     */
+    public function showUserLog(): Response
+    {
+        if($this->getUser()){
+            return $this->render('user/show.html.twig', [
+                'user' => $this->getUser()
+            ]);
+        }
+        return $this->redirectToRoute('general');
+    }
 }

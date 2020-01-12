@@ -7,13 +7,14 @@ use App\Entity\Episode;
 use App\Entity\Rating;
 use App\Entity\Series;
 use App\Form\SeriesType;
+use App\Form\RatingType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 /**
  * @Route("/series")
@@ -69,10 +70,40 @@ class SeriesController extends AbstractController
     }
 
     /**
-     * @Route("/search/{id}", name="series_show", methods={"GET"})
+     * @Route("/search/{id}", name="series_show", methods={"GET", "POST"})
      */
-    public function show(Series $series): Response
+    public function show(Series $series, Request $request): Response
     {
+        //-----------Début formulaire----------------
+        $rating = new Rating();
+    
+        // On ajoute les champs de l'entité que l'on veut à notre formulaire
+        $form = $this->get('form.factory')->createBuilder(RatingType::class, $rating)
+            ->add('value',      NumberType::class)
+            ->add('comment',    TextType::class)
+            ->getForm()
+        ;
+
+        if ($request->isMethod('POST')) {
+          
+        
+          $form->handleRequest($request);
+          $rating->setSeries($series);
+          $rating->setUser($this->getUser());
+          if ($form->isSubmitted() && $form->isValid()) {
+
+            //Sauvegarde de user
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($rating);
+            $em->flush();
+
+            return $this->redirectToRoute('series_index');
+          }
+        }
+        //------------Fin formulaire----------------
+
+
+
         $seasons = $this->getDoctrine()
             ->getRepository(Season::class)
             ->findBy(array('series' => $series));
@@ -92,6 +123,14 @@ class SeriesController extends AbstractController
 
         if($this->getUser()){
             //Si l'utilisateur est connecté
+            return $this->render('series/show.html.twig', [
+                'series' => $series,
+                'seasons' => $seasons,
+                'images' => $image,
+                'rating' => $rate,
+                'user' => $this->getUser(),
+                'form' => $form->createView()
+            ]);
         }
 
         return $this->render('series/show.html.twig', [
