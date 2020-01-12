@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Season;
 use App\Entity\Episode;
+use App\Entity\Rating;
 use App\Entity\Series;
 use App\Form\SeriesType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -68,7 +69,7 @@ class SeriesController extends AbstractController
     }
 
     /**
-     * @Route("/recherche/{id}", name="series_show", methods={"GET"})
+     * @Route("/search/{id}", name="series_show", methods={"GET"})
      */
     public function show(Series $series): Response
     {
@@ -81,6 +82,10 @@ class SeriesController extends AbstractController
             ->getRepository(Series::class)
             ->findBy(array('id' => $series));
 
+        $rate = $this->getDoctrine()
+            ->getRepository(Rating::class)
+            ->findBy(array('series' => $series));
+
         foreach ($image as $key => $value) {
             $value->setPoster(base64_encode(stream_get_contents($value->getPoster())));
         }
@@ -92,7 +97,8 @@ class SeriesController extends AbstractController
         return $this->render('series/show.html.twig', [
             'series' => $series,
             'seasons' => $seasons,
-            'images' => $image
+            'images' => $image,
+            'rating' => $rate
         ]);
     }
 
@@ -150,25 +156,21 @@ class SeriesController extends AbstractController
     }
 
     /**
-     * @Route("/{recherche}", name="series_recherche", methods={"GET"},
-     * requirements={
-     *  "pageNumber" = "\d+"
-     * }, defaults={"pageNumber" = "1"})
+     * @Route("/{recherche}", name="series_recherche", methods={"GET"})
      */
-    public function recherche(int $pageNumber, string $recherche): Response
+    public function recherche(string $recherche): Response
     {
         $series = $this->getDoctrine()
             ->getRepository(Series::class)
-            ->findBy(array('title' => $recherche), null, 10, ($pageNumber * 10) - 10);
+            ->findBy(array('title' => $recherche));
 
         return $this->render('series/index.html.twig', [
-            'series' => $series,
-            'nbPage' => $pageNumber
+            'series' => $series
         ]);
     }
 
     /**
-     * @Route("/recherche/{id}/Saison{numSaison}", name="index_episode_show", methods={"GET"})
+     * @Route("/search/{id}/Saison{numSaison}", name="index_episode_show", methods={"GET"})
      */
     public function indexEpisode(Series $serie, int $numSaison): Response
     {
@@ -188,7 +190,7 @@ class SeriesController extends AbstractController
     }
 
     /**
-     * @Route("/recherche/{id}/{idSaison}/{idEp}", name="episode_show", methods={"GET"})
+     * @Route("/search/{id}/{idSaison}/{idEp}", name="episode_show", methods={"GET"})
      */
     public function showEpisode(Series $serie, int $idSaison, int $idEp): Response
     {

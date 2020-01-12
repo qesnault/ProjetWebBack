@@ -103,6 +103,28 @@
 					</a>
 				{% endfor %}
 			</tr>
+			<tr>
+				<th>User reviews :
+				</th>
+				<td>
+					{% set sum = 0 %}
+					{% for val in rating %}
+						{% set sum = sum + val.value %}
+					{% endfor %}
+					{% if rating|length == 0 %}
+						{% set sum = 'No user have review this serie yet' %}
+						{{ sum }}
+					{% else %}
+						{% set sum = sum / rating|length %}
+						Grade : {{ sum }}/5
+					{% endif %}
+				</td>
+			</tr>
+			<tr>
+				<th>Add reviews :
+				</th>
+				<td></td>
+			</tr>
 		</tbody>
 	</td>
-</tr></tbody></table><a href="{{ path('series_index') }}">Retour à la liste des séries</a><a href="{{ path('series_edit', {'id': series.id}) }}">edit</a>{{ include('series/_delete_form.html.twig') }}{% endblock %}
+</tr></tbody></td></tr></tbody></table><a href="{{ path('series_index') }}">Retour à la liste des séries</a><a href="{{ path('series_edit', {'id': series.id}) }}">edit</a>{{ include('series/_delete_form.html.twig') }}{% endblock %}
