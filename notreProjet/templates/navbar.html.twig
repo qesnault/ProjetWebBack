@@ -2,8 +2,8 @@
 	<a href="/" class="nav">Home</a>
 	<a href="{{path('series_index')}}" class="nav">Series</a>
 
-	{% if user is defined %}
-		<a href="#">{{ user.name }}</a>
+	{% if user.name is defined %}
+		<a href="{{ path('app_logout')}}">{{ user.name }}</a>
 	{% else %}
 		{# à rajouter: un lien vers "ma page" losrque connecté" #}
 		<a href="{{path('app_login')}}" class="nav">Sing In</a>
