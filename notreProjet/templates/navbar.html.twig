@@ -1,10 +1,13 @@
-<nav class="menu" >
-		<a href="/" class="nav">Home</a>
-		<a href="{{path('series_index')}}" class="nav">Series</a>
+<nav class="menu">
+	<a href="/" class="nav">Home</a>
+	<a href="{{path('series_index')}}" class="nav">Series</a>
 
+	{% if user is defined %}
+		<a href="#">{{ user.name }}</a>
+	{% else %}
 		{# à rajouter: un lien vers "ma page" losrque connecté" #}
 		<a href="{{path('app_login')}}" class="nav">Sing In</a>
-
-		{# à rajouter: un lien vers les users losrque admin" #}
-		<a href="{{path('infos')}}" class="nav">Others</a>
+	{% endif %}
+	{# à rajouter: un lien vers les users losrque admin" #}
+	<a href="{{path('infos')}}" class="nav">Others</a>
 </nav>

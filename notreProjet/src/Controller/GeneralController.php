@@ -14,6 +14,7 @@ class GeneralController extends AbstractController
     {
         return $this->render('base.html.twig', [
             'controller_name' => 'GeneralController',
+            'user' => $this->getUser()
         ]);
     }
      /**
@@ -23,6 +24,7 @@ class GeneralController extends AbstractController
     {
         return $this->render('infos/informations.html.twig', [
             'controller_name' => 'GeneralController',
+            'user' => $this->getUser()
         ]);
     }
 

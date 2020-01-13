@@ -42,7 +42,8 @@ class SeriesController extends AbstractController
         }
     
         return $this->render('series/index.html.twig', [
-            'series' => $pagination
+            'series' => $pagination,
+            'user' => $this->getUser()
         ]);
     }
 
@@ -80,7 +81,7 @@ class SeriesController extends AbstractController
         // On ajoute les champs de l'entité que l'on veut à notre formulaire
         $form = $this->get('form.factory')->createBuilder(RatingType::class, $rating)
             ->add('value',      NumberType::class)
-            ->add('comment',    TextType::class)
+            ->add('comment',    TextType::class, array('required' => false))
             ->getForm()
         ;
 
@@ -101,8 +102,6 @@ class SeriesController extends AbstractController
           }
         }
         //------------Fin formulaire----------------
-
-
 
         $seasons = $this->getDoctrine()
             ->getRepository(Season::class)
@@ -190,7 +189,8 @@ class SeriesController extends AbstractController
         }
 
         return $this->render('series/afficherImage.html.twig', [
-            'images' => $image
+            'images' => $image,
+            'user' => $this->getUser()
         ]);
     }
 
@@ -204,7 +204,8 @@ class SeriesController extends AbstractController
             ->findBy(array('title' => $recherche));
 
         return $this->render('series/index.html.twig', [
-            'series' => $series
+            'series' => $series,
+            'user' => $this->getUser()
         ]);
     }
 
@@ -224,7 +225,8 @@ class SeriesController extends AbstractController
         return $this->render('series/afficherIndexEpisode.html.twig', [
             'series' => $serie,
             'season' => $season,
-            'episodes' => $episodes
+            'episodes' => $episodes,
+            'user' => $this->getUser()
         ]);
     }
 
@@ -244,7 +246,8 @@ class SeriesController extends AbstractController
         return $this->render('series/afficherEpisode.html.twig', [
             'series' => $serie,
             'season' => $season,
-            'episode' => $episode
+            'episode' => $episode,
+            'user' => $this->getUser()
         ]);
     }
 }

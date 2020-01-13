@@ -80,6 +80,7 @@ class UserController extends AbstractController
         return $this->render('user/new.html.twig', [
             'user' => $user,
             'form' => $form->createView(),
+            'user' => $this->getUser()
         ]);
     }
 
@@ -89,7 +90,7 @@ class UserController extends AbstractController
     public function show(User $user): Response
     {
         return $this->render('user/show.html.twig', [
-            'user' => $user,
+            'user' => $user
         ]);
     }
 

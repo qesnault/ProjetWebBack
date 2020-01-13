@@ -107,20 +107,24 @@
 				<th>User reviews :
 				</th>
 				<td>
+					{% set alreadyRate = false %}
 					{% set sum = 0 %}
 					{% for val in rating %}
 						{% set sum = sum + val.value %}
+						{% if val.user == user %}
+							{% set alreadyRate = true %}
+						{% endif %}
 					{% endfor %}
 					{% if rating|length == 0 %}
 						{% set sum = 'No user have review this serie yet' %}
 						{{ sum }}
 					{% else %}
 						{% set sum = sum / rating|length %}
-						<h4>Grade :</h4>
-						<p>{{ sum }}/5</p>
 						<h4>Rating :</h4>
+						<p>{{ sum }}/5</p>
+						<h4>Comment :</h4>
 						{% for val in rating %}
-							<p>{{ val.comment }}</p>
+							<p>{{ val.user.name }} : {{ val.value }}/5 : {{ val.comment }}</p>
 						{% endfor %}
 					{% endif %}
 				</td>
@@ -130,7 +134,12 @@
 				</th>
 				{% if user is defined %}
 					<td>
-					{{ include('series/_form.html.twig') }}</td>
+						{% if alreadyRate %}
+							<p>You already gave a grade</p>
+							{% else %}
+								{{ include('series/_form.html.twig') }}
+						{% endif %}
+					</td>
 				{% else %}
 					<td>
 						<a href="{{ path('app_login') }}">You have to login to let a review.</a>
