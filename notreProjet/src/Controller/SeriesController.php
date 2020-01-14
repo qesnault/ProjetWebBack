@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 /**
@@ -104,7 +104,7 @@ class SeriesController extends AbstractController
 
         // On ajoute les champs de l'entité que l'on veut à notre formulaire
         $form = $this->get('form.factory')->createBuilder(RatingType::class, $rating)
-            ->add('value',      NumberType::class)
+            ->add('value',      IntegerType::class, ['attr' => ['min' => 0, 'max' => 5]])
             ->add('comment',    TextType::class, array('required' => false))
             ->getForm();
 
