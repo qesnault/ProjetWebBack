@@ -12,6 +12,20 @@
 				<th>Id</th>
 				<td>{{ series.id }}</td>
 			</tr>
+			{% if user is defined %}
+				<tr>
+					<th>My list</th>
+					<td>
+					{% if series in user.series %}
+							{% set isIn = 'remove' %}
+							{{ include('series/_myList_form.html.twig') }}
+					{% else %}
+							{% set isIn = 'add' %}
+							{{ include('series/_myList_form.html.twig') }}
+					{% endif %}
+					</td>
+				</tr>
+			{% endif %}
 			<tr>
 				<th>Title</th>
 				<td>{{ series.title }}</td>
@@ -124,7 +138,10 @@
 						<p>{{ sum }}/5</p>
 						<h4>Comment :</h4>
 						{% for val in rating %}
-							<p>{{ val.user.name }} : {{ val.value }}/5 : {{ val.comment }}</p>
+							<p>{{ val.user.name }}
+								:
+								{{ val.value }}/5 :
+								{{ val.comment }}</p>
 						{% endfor %}
 					{% endif %}
 				</td>
@@ -136,8 +153,8 @@
 					<td>
 						{% if alreadyRate %}
 							<p>You already gave a grade</p>
-							{% else %}
-								{{ include('series/_form.html.twig') }}
+						{% else %}
+							{{ include('series/_form.html.twig') }}
 						{% endif %}
 					</td>
 				{% else %}

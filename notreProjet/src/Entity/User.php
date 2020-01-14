@@ -242,6 +242,8 @@ class User implements UserInterface
     {
         if (!$this->series->contains($series)) {
             $this->series[] = $series;
+        } else {
+            $this->series->removeElement($series);
         }
 
         return $this;

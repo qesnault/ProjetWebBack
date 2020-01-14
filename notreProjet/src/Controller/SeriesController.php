@@ -5,9 +5,11 @@ namespace App\Controller;
 use App\Entity\Season;
 use App\Entity\Episode;
 use App\Entity\Rating;
+use App\Entity\User;
 use App\Entity\Series;
 use App\Form\SeriesType;
 use App\Form\RatingType;
+use App\Form\UserType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -40,7 +42,7 @@ class SeriesController extends AbstractController
         foreach ($series as $key => $value) {
             $value->setPoster(base64_encode(stream_get_contents($value->getPoster())));
         }
-    
+
         return $this->render('series/index.html.twig', [
             'series' => $pagination,
             'user' => $this->getUser()
@@ -75,33 +77,54 @@ class SeriesController extends AbstractController
      */
     public function show(Series $series, Request $request): Response
     {
-        //-----------Début formulaire----------------
+        //-----------Début formulaire My list----------------
+        if ($this->getUser()) {
+            $user = $this->getUser();
+
+            // On ajoute les champs de l'entité que l'on veut à notre formulaire
+            $form2 = $this->get('form.factory')->createBuilder()
+
+                ->getForm();
+
+            if ($request->isMethod('POST')) {
+                $form2->handleRequest($request);
+                $user->addSeries($series);
+                if ($form2->isSubmitted() && $form2->isValid()) {
+                    //Sauvegarde de user
+                    $em = $this->getDoctrine()->getManager();
+                    $em->persist($user);
+                    $em->flush();
+                }
+            }
+        }
+        //------------Fin formulaire My list----------------
+
+        //-----------Début formulaire Rating----------------
         $rating = new Rating();
-    
+
         // On ajoute les champs de l'entité que l'on veut à notre formulaire
         $form = $this->get('form.factory')->createBuilder(RatingType::class, $rating)
             ->add('value',      NumberType::class)
             ->add('comment',    TextType::class, array('required' => false))
-            ->getForm()
-        ;
+            ->getForm();
 
         if ($request->isMethod('POST')) {
-          
-        
-          $form->handleRequest($request);
-          $rating->setSeries($series);
-          $rating->setUser($this->getUser());
-          if ($form->isSubmitted() && $form->isValid()) {
 
-            //Sauvegarde de user
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($rating);
-            $em->flush();
 
-            return $this->redirectToRoute('series_index');
-          }
+            $form->handleRequest($request);
+            $rating->setSeries($series);
+            $rating->setUser($this->getUser());
+            if ($form->isSubmitted() && $form->isValid()) {
+
+                //Sauvegarde de user
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($rating);
+                $em->flush();
+
+                //return $this->redirectToRoute('series_index');
+            }
         }
-        //------------Fin formulaire----------------
+        //------------Fin formulaire Rating----------------
 
         $seasons = $this->getDoctrine()
             ->getRepository(Season::class)
@@ -120,7 +143,7 @@ class SeriesController extends AbstractController
             $value->setPoster(base64_encode(stream_get_contents($value->getPoster())));
         }
 
-        if($this->getUser()){
+        if ($this->getUser()) {
             //Si l'utilisateur est connecté
             return $this->render('series/show.html.twig', [
                 'series' => $series,
@@ -128,7 +151,8 @@ class SeriesController extends AbstractController
                 'images' => $image,
                 'rating' => $rate,
                 'user' => $this->getUser(),
-                'form' => $form->createView()
+                'form' => $form->createView(),
+                'form2' => $form2->createView()
             ]);
         }
 
@@ -175,6 +199,20 @@ class SeriesController extends AbstractController
     }
 
     /**
+     * @Route("/mySeries", name="mes_series_index", methods={"GET"})
+     */
+    public function mySeries(PaginatorInterface $paginator,  Request $request): Response
+    {
+        if ($this->getUser()) {
+            return $this->render('series/mesSeries.html.twig', [
+                'user' => $this->getUser()
+            ]);
+        } else {
+            return $this->redirectToRoute('app_login');
+        }
+    }
+
+    /**
      * @Route("/{id}/image", name="series_image", methods={"GET"})
      */
     public function afficherImage(Series $series): Response
@@ -204,8 +242,7 @@ class SeriesController extends AbstractController
             ->findBy(array('title' => $recherche));
 
         return $this->render('series/index.html.twig', [
-            'series' => $series,
-            'user' => $this->getUser()
+            'series' => $series
         ]);
     }
 

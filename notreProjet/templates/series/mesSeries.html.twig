@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My series :
+{% endblock %}
+
+{% block body %}
+	<h1>My series :</h1>
+
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Title</th>
+				<th>Plot</th>
+				<th>Poster</th>
+				<th>actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for series in user.series %}
+				<tr>
+					<td>{{ series.title }}</td>
+					<td>{{ series.plot }}</td>
+        			<td><img src="data:image/jpeg;base64,{{ series.poster }}"></td>
+					<td>
+						<a class="actions" href="{{ path('series_show', {'id': series.id}, 'relative = true') }}">Voir plus</a>
+					</td>
+				</tr>
+			{% else %}
+				<tr>
+					<td colspan="11">Pas de série trouvé</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+		<div class="navigation">
+            {# knp_pagination_render(series) #}
+        </div>
+{% endblock %}
