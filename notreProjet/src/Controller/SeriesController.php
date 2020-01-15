@@ -4,14 +4,19 @@ namespace App\Controller;
 
 use App\Entity\Season;
 use App\Entity\Episode;
+use App\Entity\Rating;
+use App\Entity\User;
 use App\Entity\Series;
 use App\Form\SeriesType;
+use App\Form\RatingType;
+use App\Form\UserType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 /**
  * @Route("/series")
@@ -19,43 +24,45 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 class SeriesController extends AbstractController
 {
     /**
-     * @Route("/{pageNumber}/{search}", name="series_index", methods={"GET", "POST"},
-     * requirements={
-     *  "pageNumber" = "\d+"
-     * }, defaults={"pageNumber" = "1" ,"search"= ""})
+     * @Route("/", name="series_index", methods={"GET", "POST"})
+     * 
      */
-    public function index(int $pageNumber, string $search): Response
+    public function index(PaginatorInterface $paginator,  Request $request): Response
     {
+        $search = "";
         if($_SERVER["REQUEST_METHOD"]  === 'POST')
         {
             $search = $_POST['search'];
         }
         if($search == ""){
              $series = $this->getDoctrine()
+            ->getManager()
             ->getRepository(Series::class)
-            ->findBy(array(), array('id' => 'asc'), 10, ($pageNumber * 10) - 10);
+            ->findBy(array(), array('id' => 'asc'));
         }
         else{
             $series = $this->getDoctrine()
             ->getRepository(Series::class);
-            
-            
 
             $query = $series->createQueryBuilder('a')
                ->where('a.title LIKE :search')
                ->setParameter('search', '%'.$search.'%')
                ->getQuery();
                 $series = $query->getResult();
-;
         }
+        $pagination = $paginator->paginate(
+            $series,
+            $request->query->getInt('page', 1), /*page number*/
+            10 /*limite par page*/
+        );
 
         foreach ($series as $key => $value) {
             $value->setPoster(base64_encode(stream_get_contents($value->getPoster())));
         }
-    
+
         return $this->render('series/index.html.twig', [
-            'series' => $series,
-            'nbPage' => $pageNumber
+            'series' => $pagination,
+            'user' => $this->getUser()
         ]);
     }
     /**
@@ -94,10 +101,59 @@ class SeriesController extends AbstractController
     }
 
     /**
-     * @Route("/recherche/{id}", name="series_show", methods={"GET"})
+     * @Route("/search/{id}", name="series_show", methods={"GET", "POST"})
      */
-    public function show(Series $series): Response
+    public function show(Series $series, Request $request): Response
     {
+        //-----------Début formulaire My list----------------
+        if ($this->getUser()) {
+            $user = $this->getUser();
+
+            // On ajoute les champs de l'entité que l'on veut à notre formulaire
+            $form2 = $this->get('form.factory')->createBuilder()
+
+                ->getForm();
+
+            if ($request->isMethod('POST')) {
+                $form2->handleRequest($request);
+                $user->addSeries($series);
+                if ($form2->isSubmitted() && $form2->isValid()) {
+                    //Sauvegarde de user
+                    $em = $this->getDoctrine()->getManager();
+                    $em->persist($user);
+                    $em->flush();
+                }
+            }
+        }
+        //------------Fin formulaire My list----------------
+
+        //-----------Début formulaire Rating----------------
+        $rating = new Rating();
+
+        // On ajoute les champs de l'entité que l'on veut à notre formulaire
+        $form = $this->get('form.factory')->createBuilder(RatingType::class, $rating)
+            ->add('value',      IntegerType::class, ['attr' => ['min' => 0, 'max' => 5]])
+            ->add('comment',    TextType::class, array('required' => false))
+            ->getForm();
+
+        if ($request->isMethod('POST')) {
+
+
+            $form->handleRequest($request);
+            $rating->setSeries($series);
+            $rating->setUser($this->getUser());
+            if ($form->isSubmitted() && $form->isValid()) {
+
+                //Sauvegarde de user
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($rating);
+                $em->flush();
+
+                //return $this->redirectToRoute('series_index');
+            }
+        }
+        //------------Fin formulaire Rating----------------
+
         $seasons = $this->getDoctrine()
             ->getRepository(Season::class)
             ->findBy(array('series' => $series));
@@ -107,18 +163,32 @@ class SeriesController extends AbstractController
             ->getRepository(Series::class)
             ->findBy(array('id' => $series));
 
+        $rate = $this->getDoctrine()
+            ->getRepository(Rating::class)
+            ->findBy(array('series' => $series));
+
         foreach ($image as $key => $value) {
             $value->setPoster(base64_encode(stream_get_contents($value->getPoster())));
         }
 
-        if($this->getUser()){
+        if ($this->getUser()) {
             //Si l'utilisateur est connecté
+            return $this->render('series/show.html.twig', [
+                'series' => $series,
+                'seasons' => $seasons,
+                'images' => $image,
+                'rating' => $rate,
+                'user' => $this->getUser(),
+                'form' => $form->createView(),
+                'form2' => $form2->createView()
+            ]);
         }
 
         return $this->render('series/show.html.twig', [
             'series' => $series,
             'seasons' => $seasons,
-            'images' => $image
+            'images' => $image,
+            'rating' => $rate
         ]);
     }
 
@@ -157,6 +227,20 @@ class SeriesController extends AbstractController
     }
 
     /**
+     * @Route("/mySeries", name="mes_series_index", methods={"GET"})
+     */
+    public function mySeries(PaginatorInterface $paginator,  Request $request): Response
+    {
+        if ($this->getUser()) {
+            return $this->render('series/mesSeries.html.twig', [
+                'user' => $this->getUser()
+            ]);
+        } else {
+            return $this->redirectToRoute('app_login');
+        }
+    }
+
+    /**
      * @Route("/{id}/image", name="series_image", methods={"GET"})
      */
     public function afficherImage(Series $series): Response
@@ -171,30 +255,27 @@ class SeriesController extends AbstractController
         }
 
         return $this->render('series/afficherImage.html.twig', [
-            'images' => $image
+            'images' => $image,
+            'user' => $this->getUser()
         ]);
     }
 
     /**
-     * @Route("/{recherche}", name="series_recherche", methods={"GET"},
-     * requirements={
-     *  "pageNumber" = "\d+"
-     * }, defaults={"pageNumber" = "1"})
+     * @Route("/{recherche}", name="series_recherche", methods={"GET"})
      */
-    public function recherche(int $pageNumber, string $recherche): Response
+    public function recherche(string $recherche): Response
     {
         $series = $this->getDoctrine()
             ->getRepository(Series::class)
-            ->findBy(array('title' => $recherche), null, 10, ($pageNumber * 10) - 10);
+            ->findBy(array('title' => $recherche));
 
         return $this->render('series/index.html.twig', [
-            'series' => $series,
-            'nbPage' => $pageNumber
+            'series' => $series
         ]);
     }
 
     /**
-     * @Route("/recherche/{id}/Saison{numSaison}", name="index_episode_show", methods={"GET"})
+     * @Route("/search/{id}/Saison{numSaison}", name="index_episode_show", methods={"GET"})
      */
     public function indexEpisode(Series $serie, int $numSaison): Response
     {
@@ -209,12 +290,13 @@ class SeriesController extends AbstractController
         return $this->render('series/afficherIndexEpisode.html.twig', [
             'series' => $serie,
             'season' => $season,
-            'episodes' => $episodes
+            'episodes' => $episodes,
+            'user' => $this->getUser()
         ]);
     }
 
     /**
-     * @Route("/recherche/{id}/{idSaison}/{idEp}", name="episode_show", methods={"GET"})
+     * @Route("/search/{id}/{idSaison}/{idEp}", name="episode_show", methods={"GET"})
      */
     public function showEpisode(Series $serie, int $idSaison, int $idEp): Response
     {
@@ -229,7 +311,8 @@ class SeriesController extends AbstractController
         return $this->render('series/afficherEpisode.html.twig', [
             'series' => $serie,
             'season' => $season,
-            'episode' => $episode
+            'episode' => $episode,
+            'user' => $this->getUser()
         ]);
     }
 }

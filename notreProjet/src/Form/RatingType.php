@@ -2,32 +2,24 @@
 
 namespace App\Form;
 
-use App\Entity\Series;
+use App\Entity\Rating;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class SeriesType extends AbstractType
+class RatingType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('title')
-            ->add('plot')
-            ->add('imdb')
-            ->add('poster')
-            ->add('director')
-            ->add('youtubeTrailer')
-            ->add('awards')
-            ->add('yearStart')
-            ->add('yearEnd')
-        ;
+            ->add('value')
+            ->add('comment');
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Series::class,
+            'data_class' => Rating::class,
         ]);
     }
 }

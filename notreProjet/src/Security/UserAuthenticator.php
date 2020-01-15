@@ -79,7 +79,8 @@ class UserAuthenticator extends AbstractFormLoginAuthenticator
         // Check the user's password or other credentials and return true or false
         // If there are no credentials to check, you can just return true
         //throw new \Exception('TODO: check the credentials inside '.__FILE__);
-        return true;
+        
+        return ($user->getPassword() == $credentials['password']);
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
@@ -89,7 +90,7 @@ class UserAuthenticator extends AbstractFormLoginAuthenticator
         }
 
         // For example : return new RedirectResponse($this->urlGenerator->generate('some_route'));
-        return new RedirectResponse($this->urlGenerator->generate('user_index'));
+        return new RedirectResponse($this->urlGenerator->generate('user_log_show'));
     }
 
     protected function getLoginUrl()

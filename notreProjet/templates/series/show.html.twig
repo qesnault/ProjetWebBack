@@ -12,6 +12,20 @@
 				<th>Id</th>
 				<td>{{ series.id }}</td>
 			</tr>
+			{% if user is defined %}
+				<tr>
+					<th>My list</th>
+					<td>
+					{% if series in user.series %}
+							{% set isIn = 'remove' %}
+							{{ include('series/_myList_form.html.twig') }}
+					{% else %}
+							{% set isIn = 'add' %}
+							{{ include('series/_myList_form.html.twig') }}
+					{% endif %}
+					</td>
+				</tr>
+			{% endif %}
 			<tr>
 				<th>Title</th>
 				<td>{{ series.title }}</td>
@@ -103,6 +117,52 @@
 					</a>
 				{% endfor %}
 			</tr>
+			<tr>
+				<th>User reviews :
+				</th>
+				<td>
+					{% set alreadyRate = false %}
+					{% set sum = 0 %}
+					{% for val in rating %}
+						{% set sum = sum + val.value %}
+						{% if val.user == user %}
+							{% set alreadyRate = true %}
+						{% endif %}
+					{% endfor %}
+					{% if rating|length == 0 %}
+						{% set sum = 'No user have review this serie yet' %}
+						{{ sum }}
+					{% else %}
+						{% set sum = sum / rating|length %}
+						<h4>Rating :</h4>
+						<p>{{ sum }}/5</p>
+						<h4>Comment :</h4>
+						{% for val in rating %}
+							<p>{{ val.user.name }}
+								:
+								{{ val.value }}/5 :
+								{{ val.comment }}</p>
+						{% endfor %}
+					{% endif %}
+				</td>
+			</tr>
+			<tr>
+				<th>Add reviews :
+				</th>
+				{% if user is defined %}
+					<td>
+						{% if alreadyRate %}
+							<p>You already gave a grade</p>
+						{% else %}
+							{{ include('series/_form.html.twig') }}
+						{% endif %}
+					</td>
+				{% else %}
+					<td>
+						<a href="{{ path('app_login') }}">You have to login to let a review.</a>
+					</td>
+				{% endif %}
+			</tr>
 		</tbody>
 	</td>
-</tr></tbody></table><a href="{{ path('series_index') }}">Retour à la liste des séries</a><a href="{{ path('series_edit', {'id': series.id}) }}">edit</a>{{ include('series/_delete_form.html.twig') }}{% endblock %}
+</tr></tbody></td></tr></tbody></table></br><a href="{{ path('series_index') }}">Retour à la liste des séries</a></br></br>{{ include('series/_delete_form.html.twig') }}{% endblock %}

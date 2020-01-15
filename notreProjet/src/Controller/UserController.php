@@ -80,6 +80,7 @@ class UserController extends AbstractController
         return $this->render('user/new.html.twig', [
             'user' => $user,
             'form' => $form->createView(),
+            'user' => $this->getUser()
         ]);
     }
 
@@ -89,7 +90,7 @@ class UserController extends AbstractController
     public function show(User $user): Response
     {
         return $this->render('user/show.html.twig', [
-            'user' => $user,
+            'user' => $user
         ]);
     }
 
@@ -125,5 +126,18 @@ class UserController extends AbstractController
         }
 
         return $this->redirectToRoute('user_index');
+    }
+
+    /**
+     * @Route("/informations", name="user_log_show", methods={"GET"})
+     */
+    public function showUserLog(): Response
+    {
+        if($this->getUser()){
+            return $this->render('user/show.html.twig', [
+                'user' => $this->getUser()
+            ]);
+        }
+        return $this->redirectToRoute('general');
     }
 }
