@@ -71,23 +71,16 @@ class SeriesController extends AbstractController
      */
     public function new(Request $request): Response
     {
+        if (!$this->getUser() || $this->getUser()->getAdmin() == false) {
+            return $this->redirectToRoute('series_index');
+        } 
         $search = "";
         $message = '';
         if ($_SERVER["REQUEST_METHOD"]  === 'POST') {
             $search = $_POST['search'];
 
             $series = new Series();
-            /*$form = $this->createForm(SeriesType::class, $series);
-            $form->handleRequest($request);
-            
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($series);
-            $entityManager->flush();
-            
-            return $this->redirectToRoute('series_index');
-        }
-        */
+
             $laSerieImdb = $search;
             $apikey = "3c43f1be";
             $message = 'The show already exits';
@@ -144,7 +137,8 @@ class SeriesController extends AbstractController
         }
 
         return $this->render('series/new.html.twig', [
-            'series' => $message
+            'series' => $message,
+            'user' => $this->getUser()
         ]);
     }
 
@@ -308,20 +302,6 @@ class SeriesController extends AbstractController
     }
 
     /**
-     * @Route("/{recherche}", name="series_recherche", methods={"GET"})
-     */
-    public function recherche(string $recherche): Response
-    {
-        $series = $this->getDoctrine()
-            ->getRepository(Series::class)
-            ->findBy(array('title' => $recherche));
-
-        return $this->render('series/index.html.twig', [
-            'series' => $series
-        ]);
-    }
-
-    /**
      * @Route("/search/{id}/Saison{numSaison}", name="index_episode_show", methods={"GET"})
      */
     public function indexEpisode(Series $serie, int $numSaison): Response
@@ -361,5 +341,18 @@ class SeriesController extends AbstractController
             'episode' => $episode,
             'user' => $this->getUser()
         ]);
+    }
+
+    /**
+     * @Route("/delete/{id}", name="rating_delete", methods={"DELETE", "GET"})
+     */
+    public function deleteRating(Request $request, Rating $rating): Response
+    {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->remove($rating);
+            $entityManager->flush();
+        
+
+        return $this->redirectToRoute('series_index');
     }
 }
