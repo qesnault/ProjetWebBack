@@ -1,13 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Series{% endblock %}
+{% block title %}New Series
+{% endblock %}
 
 {% block body %}
-    <h1>Create new Series</h1>
+	<h1>Create new Series</h1>
 
-    {# include('series/_form.html.twig') #}
+	<form method="post" action="{{ path('series_new') }}">
+		<input type="text" placeholder="Imdb.." name="search">
+		<input type="submit" value="Add" class="search" onclick=" {{ path('series_new') }} ">
+	</form>
 
-    {{ series }}
+	{{ series }}
 
-    <a href="{{ path('series_index') }}">back to list</a>
+	<a href="{{ path('series_index') }}">back to list</a>
 {% endblock %}

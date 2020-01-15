@@ -32,25 +32,23 @@ class SeriesController extends AbstractController
     public function index(PaginatorInterface $paginator,  Request $request): Response
     {
         $search = "";
-        if($_SERVER["REQUEST_METHOD"]  === 'POST')
-        {
+        if ($_SERVER["REQUEST_METHOD"]  === 'POST') {
             $search = $_POST['search'];
         }
-        if($search == ""){
-             $series = $this->getDoctrine()
-            ->getManager()
-            ->getRepository(Series::class)
-            ->findBy(array(), array('id' => 'asc'));
-        }
-        else{
+        if ($search == "") {
             $series = $this->getDoctrine()
-            ->getRepository(Series::class);
+                ->getManager()
+                ->getRepository(Series::class)
+                ->findBy(array(), array('id' => 'asc'));
+        } else {
+            $series = $this->getDoctrine()
+                ->getRepository(Series::class);
 
             $query = $series->createQueryBuilder('a')
-               ->where('a.title LIKE :search')
-               ->setParameter('search', '%'.$search.'%')
-               ->getQuery();
-                $series = $query->getResult();
+                ->where('a.title LIKE :search')
+                ->setParameter('search', '%' . $search . '%')
+                ->getQuery();
+            $series = $query->getResult();
         }
         $pagination = $paginator->paginate(
             $series,
@@ -67,90 +65,86 @@ class SeriesController extends AbstractController
             'user' => $this->getUser()
         ]);
     }
-    /**
-     * @Route("/search", name="navbar_action", methods={"GET","POST"})
-     */
-    public function navbar_action(Request $r)
-    {
-        $request=$this->get('r');
-
- 
-        $adr = $_POST['search'];
-
-    }
 
     /**
      * @Route("/new", name="series_new", methods={"GET","POST"})
      */
     public function new(Request $request): Response
     {
-        $series = new Series();
-        /*$form = $this->createForm(SeriesType::class, $series);
-        $form->handleRequest($request);
+        $search = "";
+        $message = '';
+        if ($_SERVER["REQUEST_METHOD"]  === 'POST') {
+            $search = $_POST['search'];
 
+            $series = new Series();
+            /*$form = $this->createForm(SeriesType::class, $series);
+            $form->handleRequest($request);
+            
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($series);
             $entityManager->flush();
-
+            
             return $this->redirectToRoute('series_index');
         }
         */
-        $laSerieImdb = "tt0071075";
-        $content = 'La série existe déjà';
-        $Testseries = $this->getDoctrine()
-            ->getManager()
-            ->getRepository(Series::class)
-            ->findOneBy(array('imdb' => $laSerieImdb));
+            $laSerieImdb = $search;
+            $apikey = "3c43f1be";
+            $message = 'The show already exits';
+            $Testseries = $this->getDoctrine()
+                ->getManager()
+                ->getRepository(Series::class)
+                ->findOneBy(array('imdb' => $laSerieImdb));
 
-        if (!$Testseries) {
+            if (!$Testseries) {
 
-            $client = HttpClient::create();
-            $response = $client->request('GET', 'http://www.omdbapi.com/?i='. $laSerieImdb .'&apikey=3c43f1be');
+                $client = HttpClient::create();
+                $response = $client->request('GET', 'http://www.omdbapi.com/?i=' . $laSerieImdb . '&apikey=' . $apikey);
 
-            $content = $response->toArray();
+                $content = $response->toArray();
 
-            $series->setTitle($content['Title']);
-            $series->setPlot($content['Plot']);
-            $series->setImdb($content['imdbID']);
-            $series->setDirector($content['Director']);
-            $series->setYoutubeTrailer('https://www.youtube.com/watch?v=TUEhJmjfC28');
-            $series->setAwards($content['Awards']);
-            if (strlen($content['Year'] == 4)) {
-                $series->setYearStart(intval($content['Year']));
-            } else {
-                $series->setYearStart(intval(substr($content['Year'], 0, 4)));
-                $series->setYearEnd(intval(substr($content['Year'], 4, 8)));
-            }
-
-
-            $clientPoster = HttpClient::create();
-            $responsePoster = $clientPoster->request('GET', 'http://img.omdbapi.com/?i='. $laSerieImdb .'&apikey=3c43f1be');
-            $contentPoster = $responsePoster->getContent();
-            //$series->setPoster(base64_encode(stream_get_contents($contentPoster)));
-            $series->setPoster($contentPoster);
-
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($series);
-            $em->flush();
+                $series->setTitle($content['Title']);
+                $series->setPlot($content['Plot']);
+                $series->setImdb($content['imdbID']);
+                $series->setDirector($content['Director']);
+                $series->setYoutubeTrailer('https://www.youtube.com/watch?v=TUEhJmjfC28');
+                $series->setAwards($content['Awards']);
+                if (strlen($content['Year'] == 4)) {
+                    $series->setYearStart(intval($content['Year']));
+                } else {
+                    $series->setYearStart(intval(substr($content['Year'], 0, 4)));
+                    $series->setYearEnd(intval(substr($content['Year'], 4, 8)));
+                }
 
 
-            $nbSeason = intval($content['totalSeasons']);
+                $clientPoster = HttpClient::create();
+                $responsePoster = $clientPoster->request('GET', 'http://img.omdbapi.com/?i=' . $laSerieImdb . '&apikey=' . $apikey);
+                $contentPoster = $responsePoster->getContent();
+                //$series->setPoster(base64_encode(stream_get_contents($contentPoster)));
+                $series->setPoster($contentPoster);
 
-            for ($i = 1; $i <= $nbSeason; $i++) {
-                $season = new Season();
-                $season->setSeries($series);
-                $season->setNumber($i);
                 $em = $this->getDoctrine()->getManager();
-                $em->persist($season);
+                $em->persist($series);
                 $em->flush();
-            }
 
-            $content = $response->getContent();
+
+                $nbSeason = intval($content['totalSeasons']);
+
+                for ($i = 1; $i <= $nbSeason; $i++) {
+                    $season = new Season();
+                    $season->setSeries($series);
+                    $season->setNumber($i);
+                    $em = $this->getDoctrine()->getManager();
+                    $em->persist($season);
+                    $em->flush();
+                }
+
+                $message = 'The show ' . $content['Title'] . 'had been add correctly';
+            }
         }
-        
+
         return $this->render('series/new.html.twig', [
-            'series' => $content
+            'series' => $message
         ]);
     }
 
@@ -165,7 +159,6 @@ class SeriesController extends AbstractController
 
             // On ajoute les champs de l'entité que l'on veut à notre formulaire
             $form2 = $this->get('form.factory')->createBuilder()
-
                 ->getForm();
 
             if ($request->isMethod('POST')) {
