@@ -1,12 +1,23 @@
 <nav class="menu">
 	<a href="/" class="nav">Home</a>
+
 	<a href="{{path('series_index')}}" class="nav">Series</a>
+
 	{# à rajouter: un lien vers les users losrque admin" #}
+
 	<a href="{{path('infos')}}" class="nav">Others</a>
+
 	{% if user.name is defined %}
 		<a href="{{ path('user_show', {'id' : user.id })}}">{{ user.name }}</a>
 	{% else %}
-		{# à rajouter: un lien vers "ma page" losrque connecté" #}
-		<a href="{{path('app_login')}}" class="nav">Sing In</a>
+
+	<a href="{{path('app_login')}}" class="nav">Sing In</a>
+	
 	{% endif %}
+
+		<form method="post" action="{{ path('series_index') }}">
+ 			<input type="text" placeholder="Search.." name="search">
+        	<input type="submit" value="GO >>" class="search" onClick=" {{ path('series_index') }} ">
+        </form> 
+
 </nav>

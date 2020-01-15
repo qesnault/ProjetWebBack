@@ -43,3 +43,24 @@ p,h1,li,td,tr,a{
 	border-radius: 5px;
 	padding: 10px;
 }
+#button{
+	background: #8160cd;
+  	border: 0;
+  	width: 40%;
+  	height: 40px;
+  	border-radius: 3px;
+  	color: white;
+  	cursor: pointer;
+}
+#button:hover{
+	background: #51309d;
+	transition: background 0.3s;
+}
+.input{
+	background-color: #2c3338;
+	border: 0;
+	border-radius: 5px;
+	width: 20%;
+	height: 40px;
+	color: white;
+}

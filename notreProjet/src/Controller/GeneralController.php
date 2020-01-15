@@ -27,5 +27,8 @@ class GeneralController extends AbstractController
             'user' => $this->getUser()
         ]);
     }
+    /**
+     * @Route("/", name="infos")
+     */
 
 }

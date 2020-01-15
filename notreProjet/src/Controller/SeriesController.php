@@ -26,15 +26,32 @@ use Symfony\Component\Validator\Constraints\Length;
 class SeriesController extends AbstractController
 {
     /**
-     * @Route("/", name="series_index", methods={"GET"})
+     * @Route("/", name="series_index", methods={"GET", "POST"})
+     * 
      */
     public function index(PaginatorInterface $paginator,  Request $request): Response
     {
-        $series = $this->getDoctrine()
+        $search = "";
+        if($_SERVER["REQUEST_METHOD"]  === 'POST')
+        {
+            $search = $_POST['search'];
+        }
+        if($search == ""){
+             $series = $this->getDoctrine()
             ->getManager()
             ->getRepository(Series::class)
             ->findBy(array(), array('id' => 'asc'));
+        }
+        else{
+            $series = $this->getDoctrine()
+            ->getRepository(Series::class);
 
+            $query = $series->createQueryBuilder('a')
+               ->where('a.title LIKE :search')
+               ->setParameter('search', '%'.$search.'%')
+               ->getQuery();
+                $series = $query->getResult();
+        }
         $pagination = $paginator->paginate(
             $series,
             $request->query->getInt('page', 1), /*page number*/
@@ -49,6 +66,17 @@ class SeriesController extends AbstractController
             'series' => $pagination,
             'user' => $this->getUser()
         ]);
+    }
+    /**
+     * @Route("/search", name="navbar_action", methods={"GET","POST"})
+     */
+    public function navbar_action(Request $r)
+    {
+        $request=$this->get('r');
+
+ 
+        $adr = $_POST['search'];
+
     }
 
     /**
