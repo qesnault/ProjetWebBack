@@ -16,13 +16,13 @@
 				<tr>
 					<th>My list</th>
 					<td>
-					{% if series in user.series %}
+						{% if series in user.series %}
 							{% set isIn = 'remove' %}
 							{{ include('series/_myList_form.html.twig') }}
-					{% else %}
+						{% else %}
 							{% set isIn = 'add' %}
 							{{ include('series/_myList_form.html.twig') }}
-					{% endif %}
+						{% endif %}
 					</td>
 				</tr>
 			{% endif %}
@@ -125,8 +125,10 @@
 					{% set sum = 0 %}
 					{% for val in rating %}
 						{% set sum = sum + val.value %}
-						{% if val.user == user %}
-							{% set alreadyRate = true %}
+						{% if user is defined %}
+							{% if val.user == user %}
+								{% set alreadyRate = true %}
+							{% endif %}
 						{% endif %}
 					{% endfor %}
 					{% if rating|length == 0 %}

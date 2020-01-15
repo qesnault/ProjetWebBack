@@ -19,6 +19,8 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoder;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 
 class UserAuthenticator extends AbstractFormLoginAuthenticator
@@ -79,8 +81,14 @@ class UserAuthenticator extends AbstractFormLoginAuthenticator
         // Check the user's password or other credentials and return true or false
         // If there are no credentials to check, you can just return true
         //throw new \Exception('TODO: check the credentials inside '.__FILE__);
-        
+        //$passwordEncoder = new UserPasswordEncoderInterface;
+        //$pass = $passwordEncoder->encodePassword($user, $credentials['password']);
         return ($user->getPassword() == $credentials['password']);
+    }
+
+    public function encodePass(UserPasswordEncoderInterface $passwordEncoder, UserInterface $user, string $plainPass){
+        $pass = $passwordEncoder->encodePassword($user, $plainPass);
+        return $pass;
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)

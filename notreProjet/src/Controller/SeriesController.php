@@ -17,6 +17,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\Validator\Constraints\Length;
 
 /**
  * @Route("/series")
@@ -55,7 +57,7 @@ class SeriesController extends AbstractController
     public function new(Request $request): Response
     {
         $series = new Series();
-        $form = $this->createForm(SeriesType::class, $series);
+        /*$form = $this->createForm(SeriesType::class, $series);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -65,10 +67,62 @@ class SeriesController extends AbstractController
 
             return $this->redirectToRoute('series_index');
         }
+        */
+        $laSerieImdb = "tt0071075";
+        $content = 'La série existe déjà';
+        $Testseries = $this->getDoctrine()
+            ->getManager()
+            ->getRepository(Series::class)
+            ->findOneBy(array('imdb' => $laSerieImdb));
 
+        if (!$Testseries) {
+
+            $client = HttpClient::create();
+            $response = $client->request('GET', 'http://www.omdbapi.com/?i='. $laSerieImdb .'&apikey=3c43f1be');
+
+            $content = $response->toArray();
+
+            $series->setTitle($content['Title']);
+            $series->setPlot($content['Plot']);
+            $series->setImdb($content['imdbID']);
+            $series->setDirector($content['Director']);
+            $series->setYoutubeTrailer('https://www.youtube.com/watch?v=TUEhJmjfC28');
+            $series->setAwards($content['Awards']);
+            if (strlen($content['Year'] == 4)) {
+                $series->setYearStart(intval($content['Year']));
+            } else {
+                $series->setYearStart(intval(substr($content['Year'], 0, 4)));
+                $series->setYearEnd(intval(substr($content['Year'], 4, 8)));
+            }
+
+
+            $clientPoster = HttpClient::create();
+            $responsePoster = $clientPoster->request('GET', 'http://img.omdbapi.com/?i='. $laSerieImdb .'&apikey=3c43f1be');
+            $contentPoster = $responsePoster->getContent();
+            //$series->setPoster(base64_encode(stream_get_contents($contentPoster)));
+            $series->setPoster($contentPoster);
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($series);
+            $em->flush();
+
+
+            $nbSeason = intval($content['totalSeasons']);
+
+            for ($i = 1; $i <= $nbSeason; $i++) {
+                $season = new Season();
+                $season->setSeries($series);
+                $season->setNumber($i);
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($season);
+                $em->flush();
+            }
+
+            $content = $response->getContent();
+        }
+        
         return $this->render('series/new.html.twig', [
-            'series' => $series,
-            'form' => $form->createView(),
+            'series' => $content
         ]);
     }
 
