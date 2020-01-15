@@ -7,4 +7,8 @@
 
 		{# à rajouter: un lien vers les users losrque admin" #}
 		<a href="{{path('infos')}}" class="nav">Others</a>
+		<form method="post" action="{{ path('series_index') }}">
+ 			<input type="text" placeholder="Search.." name="search">
+        	<input type="submit" value="GO >>" class="search" onClick=" {{ path('series_index') }} ">
+        </form> 
 </nav>

@@ -19,16 +19,35 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 class SeriesController extends AbstractController
 {
     /**
-     * @Route("/{pageNumber}", name="series_index", methods={"GET"},
+     * @Route("/{pageNumber}/{search}", name="series_index", methods={"GET", "POST"},
      * requirements={
      *  "pageNumber" = "\d+"
-     * }, defaults={"pageNumber" = "1"})
+     * }, defaults={"pageNumber" = "1" ,"search"= ""})
      */
-    public function index(int $pageNumber): Response
+    public function index(int $pageNumber, string $search): Response
     {
-        $series = $this->getDoctrine()
+        if($_SERVER["REQUEST_METHOD"]  === 'POST')
+        {
+            $search = $_POST['search'];
+        }
+        if($search == ""){
+             $series = $this->getDoctrine()
             ->getRepository(Series::class)
             ->findBy(array(), array('id' => 'asc'), 10, ($pageNumber * 10) - 10);
+        }
+        else{
+            $series = $this->getDoctrine()
+            ->getRepository(Series::class);
+            
+            
+
+            $query = $series->createQueryBuilder('a')
+               ->where('a.title LIKE :search')
+               ->setParameter('search', '%'.$search.'%')
+               ->getQuery();
+                $series = $query->getResult();
+;
+        }
 
         foreach ($series as $key => $value) {
             $value->setPoster(base64_encode(stream_get_contents($value->getPoster())));
@@ -38,6 +57,17 @@ class SeriesController extends AbstractController
             'series' => $series,
             'nbPage' => $pageNumber
         ]);
+    }
+    /**
+     * @Route("/search", name="navbar_action", methods={"GET","POST"})
+     */
+    public function navbar_action(Request $r)
+    {
+        $request=$this->get('r');
+
+ 
+        $adr = $_POST['search'];
+
     }
 
     /**

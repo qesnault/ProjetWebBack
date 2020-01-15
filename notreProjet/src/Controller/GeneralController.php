@@ -25,5 +25,8 @@ class GeneralController extends AbstractController
             'controller_name' => 'GeneralController',
         ]);
     }
+    /**
+     * @Route("/", name="infos")
+     */
 
 }

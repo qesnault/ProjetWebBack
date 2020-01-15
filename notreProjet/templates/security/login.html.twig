@@ -13,12 +13,10 @@
             You are logged in as {{ app.user.username }}, <a href="{{ path('app_logout') }}">Logout</a>
         </div>
     {% endif %}
-
+<div class="content">
     <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-    <label for="inputEmail">Email</label>
-    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" required autofocus>
-    <label for="inputPassword">Password</label>
-    <input type="password" name="password" id="inputPassword" class="form-control" required>
+    <input type="email" value="{{ last_username }}" name="email" placeholder="email" class="input" required autofocus>
+    <input type="password" name="password" class="input" placeholder="Password" required>
 
     <input type="hidden" name="_csrf_token"
            value="{{ csrf_token('authenticate') }}"
@@ -35,8 +33,10 @@
         </div>
     #}
 
-    <button class="btn btn-lg btn-primary" type="submit">
+    <button id="button" class="btn btn-lg btn-primary" type="submit">
         Sign in
     </button>
+    <br><a href="{{path('user_new')}}" >Not registered? Register now!</a>
+    </div>
 </form>
 {% endblock %}
