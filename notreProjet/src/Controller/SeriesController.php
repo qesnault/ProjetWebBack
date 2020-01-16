@@ -73,7 +73,7 @@ class SeriesController extends AbstractController
     {
         if (!$this->getUser() || $this->getUser()->getAdmin() == false) {
             return $this->redirectToRoute('series_index');
-        } 
+        }
         $search = "";
         $message = '';
         if ($_SERVER["REQUEST_METHOD"]  === 'POST') {
@@ -304,8 +304,10 @@ class SeriesController extends AbstractController
     /**
      * @Route("/search/{id}/Saison{numSaison}", name="index_episode_show", methods={"GET"})
      */
-    public function indexEpisode(Series $serie, int $numSaison): Response
+    public function indexEpisode(Series $serie, int $numSaison, Request $request): Response
     {
+
+
         $season = $this->getDoctrine()
             ->getRepository(Season::class)
             ->findOneBy(array('series' => $serie, 'number' => $numSaison));
@@ -318,7 +320,7 @@ class SeriesController extends AbstractController
             'series' => $serie,
             'season' => $season,
             'episodes' => $episodes,
-            'user' => $this->getUser()
+            'user' => $this->getUser(),
         ]);
     }
 
@@ -348,11 +350,37 @@ class SeriesController extends AbstractController
      */
     public function deleteRating(Request $request, Rating $rating): Response
     {
+        if ($this->getUser()) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($rating);
             $entityManager->flush();
-        
+        }
+
 
         return $this->redirectToRoute('series_index');
+    }
+
+    /**
+     * @Route("/search/{id}/{idSaison}/{idEp}/saw", name="episode_saw", methods={"GET"})
+     */
+    public function sawEpisode(Series $serie, int $idSaison, int $idEp): Response
+    {
+        if ($this->getUser()) {
+            $season = $this->getDoctrine()
+                ->getRepository(Season::class)
+                ->findOneBy(array('id' => $idSaison));
+
+            $episode = $this->getDoctrine()
+                ->getRepository(Episode::class)
+                ->findOneBy(array('id' => $idEp));
+
+            $this->getUser()->addEpisode($episode);
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($this->getUser());
+            $em->flush();
+        }
+
+        return $this->redirectToRoute('index_episode_show', array('id' => $idSaison, 'numSaison' => $idSaison));
     }
 }
