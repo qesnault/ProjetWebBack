@@ -25,12 +25,16 @@ class UserController extends AbstractController
      */
     public function index(): Response
     {
+        if (!$this->getUser() || $this->getUser()->getAdmin() == false) {
+            return $this->redirectToRoute('series_index');
+        } 
         $users = $this->getDoctrine()
             ->getRepository(User::class)
             ->findAll();
 
         return $this->render('user/index.html.twig', [
             'users' => $users,
+            'user' => $this->getUser()
         ]);
     }
 

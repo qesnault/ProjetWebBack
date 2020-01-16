@@ -31,11 +31,12 @@ class UserAuthenticator extends AbstractFormLoginAuthenticator
     private $urlGenerator;
     private $csrfTokenManager;
 
-    public function __construct(EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager)
+    public function __construct(EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder)
     {
         $this->entityManager = $entityManager;
         $this->urlGenerator = $urlGenerator;
         $this->csrfTokenManager = $csrfTokenManager;
+        $this->passwordEncoder = $passwordEncoder;
     }
 
     public function supports(Request $request)
@@ -78,12 +79,17 @@ class UserAuthenticator extends AbstractFormLoginAuthenticator
 
     public function checkCredentials($credentials, UserInterface $user)
     {
-        // Check the user's password or other credentials and return true or false
-        // If there are no credentials to check, you can just return true
-        //throw new \Exception('TODO: check the credentials inside '.__FILE__);
-        //$passwordEncoder = new UserPasswordEncoderInterface;
-        //$pass = $passwordEncoder->encodePassword($user, $credentials['password']);
-        return ($user->getPassword() == $credentials['password']);
+        if(empty($this->getPassword($credentials))){
+            return false;
+        } else {
+            return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
+        }
+        //return ($user->getPassword() == $credentials['password']);
+    }
+
+    public function getPassword($credentials)
+    {
+        return $credentials['password'];
     }
 
     public function encodePass(UserPasswordEncoderInterface $passwordEncoder, UserInterface $user, string $plainPass){

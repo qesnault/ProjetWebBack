@@ -1,32 +1,42 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Epiosde index{% endblock %}
+{% block title %}Epiosde index
+{% endblock %}
 
 {% block body %}
-    <h1>Episode</h1>
+	<h1>Episode</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Numéro :</th>
-                <th>Titre :</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for episode in episodes %}
-            <tr>
-                <td>{{ episode.number }}</td>
-                <td>{{ episode.title }}</td>
-                <td>
-                    <a href="{{ path('episode_show', {'id': series.id, 'idSaison': season.id, 'idEp': episode.id}) }}">Voir plus</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="11">Pas d'épisode trouvé</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    <a href="{{ path('series_show', {'id': series.id}) }}">Retour à la série</a>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Numéro :</th>
+				<th>Titre :</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for episode in episodes %}
+				<tr>
+					<td>{{ episode.number }}</td>
+					<td>{{ episode.title }}</td>
+					<td>
+						<a href="{{ path('episode_show', {'id': series.id, 'idSaison': season.id, 'idEp': episode.id}) }}">Voir plus</a>
+					</td>
+					{% if user is defined %}
+						{% if episode in user.episode %}
+							{% set isIn = 'I saw it' %}
+							{{ include('series/_myList_form.html.twig') }}
+						{% else %}
+							{% set isIn = 'I didnt saw it' %}
+							{{ include('series/_myList_form.html.twig') }}
+						{% endif %}
+					{% endif %}
+				</tr>
+			{% else %}
+				<tr>
+					<td colspan="11">Pas d'épisode trouvé</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<a href="{{ path('series_show', {'id': series.id}) }}">Retour à la série</a>
 {% endblock %}
