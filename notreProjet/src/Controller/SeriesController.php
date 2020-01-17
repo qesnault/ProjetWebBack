@@ -337,12 +337,21 @@ class SeriesController extends AbstractController
             ->getRepository(Episode::class)
             ->findOneBy(array('id' => $idEp));
 
-        return $this->render('series/afficherEpisode.html.twig', [
-            'series' => $serie,
-            'season' => $season,
-            'episode' => $episode,
-            'user' => $this->getUser()
-        ]);
+        if ($this->getUser()) {
+
+            return $this->render('series/afficherEpisode.html.twig', [
+                'series' => $serie,
+                'season' => $season,
+                'episode' => $episode,
+                'user' => $this->getUser()
+            ]);
+        } else {
+            return $this->render('series/afficherEpisode.html.twig', [
+                'series' => $serie,
+                'season' => $season,
+                'episode' => $episode
+            ]);
+        }
     }
 
     /**
@@ -381,6 +390,6 @@ class SeriesController extends AbstractController
             $em->flush();
         }
 
-        return $this->redirectToRoute('index_episode_show', array('id' => $idSaison, 'numSaison' => $idSaison));
+        return $this->redirectToRoute('index_episode_show', array('id' => $serie->getId(), 'numSaison' => $season->getNumber()));
     }
 }

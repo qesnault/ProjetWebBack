@@ -23,13 +23,15 @@
 						<a href="{{ path('episode_show', {'id': series.id, 'idSaison': season.id, 'idEp': episode.id}) }}">Show more</a>
 					</td>
 					<td>
-					{% if user is defined %}
-						{% if episode in user.episode %}
-							<a href="{{ path('episode_saw', {'id': series.id, 'idSaison': season.id, 'idEp': episode.id}) }}">I saw it</a>
-						{% else %}
-							<a href="{{ path('episode_saw', {'id': series.id, 'idSaison': season.id, 'idEp': episode.id}) }}">I didnt saw it</a>
+						{% if user is defined %}
+							{% if user.episode is defined %}
+								{% if episode in user.episode %}
+									<a href="{{ path('episode_saw', {'id': series.id, 'idSaison': season.id, 'idEp': episode.id}) }}">I saw it</a>
+								{% else %}
+									<a href="{{ path('episode_saw', {'id': series.id, 'idSaison': season.id, 'idEp': episode.id}) }}">I didnt saw it</a>
+								{% endif %}
+							{% endif %}
 						{% endif %}
-					{% endif %}
 					</td>
 				</tr>
 			{% else %}
