@@ -7,9 +7,10 @@
 											<input type="text" placeholder="Search.." name="search">
 											<input type="submit" value="GO >>" class="search" onclick=" {{ path('series_index') }} ">
 											#}
-					<input id="search" type="search" name="search" required>
+					<input id="autocomplete-input" type="search" name="search" required>
 					<label class="label-icon">
 						<i class="material-icons">search</i>
+						search
 					</label>
 					<i class="material-icons">close</i>
 				</div>
@@ -31,7 +32,7 @@
 					<a href="{{ path('user_show', {'id' : user.id })}}">{{ user.name }}</a>
 				{% else %}
 
-					<a href="{{path('app_login')}}" class="nav">Sing In</a>
+					<a href="{{path('app_login')}}" class="nav">Sign In/Register</a>
 
 				{% endif %}
 			</li>

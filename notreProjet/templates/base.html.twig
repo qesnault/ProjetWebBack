@@ -8,8 +8,8 @@
 		</title>
 		{% block stylesheet %}
 			{#
-						            <link rel="stylesheet" type="text/css" href="{{ asset('styleSheets/base.css') }}"> 
-						            #}
+									            <link rel="stylesheet" type="text/css" href="{{ asset('styleSheets/base.css') }}"> 
+									            #}
 			<link
 			rel="stylesheet" type="text/css" href="{{ asset('styleSheets/main.css') }}">
 			<!--Import Google Icon Font-->
@@ -32,13 +32,19 @@
 
 			{% block presentation %}
 				<div class="content">
-					<h1>Website referencing series</h1>
-					<p>Learning web developpment, we had a project whitch consists on creating a website using a database gathering informations on series.</p>
-					<p>This is the result of this project</p>
-					<p>This website uses a database of series, you can use the search bar to find a serie you want.</p>
-					<p>Theres a login system, click on login to log yourself, if you have no account then click on the "register" link below</p>
-					<p>While logged, you can have access to your informations if you click on your name on the navigation bar.</p>
-					<p>The "information" section tells you more about the creators of the website</p>
+					<h1 class="center-align">Website referencing series</h1>
+					<div class="row center-align">
+						<div class="col s12 m6 offset-m3 center-align">
+							<div class="center-align card-panel teal white-text">
+								<p>Learning web developpment, we had a project whitch consists on creating a website using a database gathering informations on series.</p>
+								<p>This is the result of this project</p>
+								<p>This website uses a database of series, you can use the search bar to find a serie you want.</p>
+								<p>Theres a login system, click on login to log yourself, if you have no account then click on the "register" link below</p>
+								<p>While logged, you can have access to your informations if you click on your name on the navigation bar.</p>
+								<p>The "information" section tells you more about the creators of the website</p>
+							</div>
+						</div>
+					</div>
 				</div>
 			{% endblock %}
 			{% block scripts %}
