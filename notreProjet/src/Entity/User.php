@@ -216,6 +216,8 @@ class User implements UserInterface
     {
         if (!$this->episode->contains($episode)) {
             $this->episode[] = $episode;
+        } else {
+            $this->episode->removeElement($episode);
         }
 
         return $this;

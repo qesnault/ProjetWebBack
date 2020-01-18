@@ -16,13 +16,13 @@
 				<tr>
 					<th>My list</th>
 					<td>
-					{% if series in user.series %}
+						{% if series in user.series %}
 							{% set isIn = 'remove' %}
 							{{ include('series/_myList_form.html.twig') }}
-					{% else %}
+						{% else %}
 							{% set isIn = 'add' %}
 							{{ include('series/_myList_form.html.twig') }}
-					{% endif %}
+						{% endif %}
 					</td>
 				</tr>
 			{% endif %}
@@ -125,8 +125,10 @@
 					{% set sum = 0 %}
 					{% for val in rating %}
 						{% set sum = sum + val.value %}
-						{% if val.user == user %}
-							{% set alreadyRate = true %}
+						{% if user is defined %}
+							{% if val.user == user %}
+								{% set alreadyRate = true %}
+							{% endif %}
 						{% endif %}
 					{% endfor %}
 					{% if rating|length == 0 %}
@@ -142,27 +144,34 @@
 								:
 								{{ val.value }}/5 :
 								{{ val.comment }}</p>
+							{% if user is defined %}
+								{% if user.admin == true %}
+									<form action="{{path('rating_delete', {'id': val.id})}}">
+										<input type="submit" value="Delete this comment" class="search" onclick="{{path('rating_delete', {'id': val.id})}}">
+									</form>
+								{% endif %}
+							{% endif %}
 						{% endfor %}
 					{% endif %}
 				</td>
 			</tr>
-			<tr>
-				<th>Add reviews :
-				</th>
-				{% if user is defined %}
-					<td>
-						{% if alreadyRate %}
-							<p>You already gave a grade</p>
-						{% else %}
-							{{ include('series/_form.html.twig') }}
-						{% endif %}
-					</td>
-				{% else %}
-					<td>
-						<a href="{{ path('app_login') }}">You have to login to let a review.</a>
-					</td>
-				{% endif %}
-			</tr>
 		</tbody>
 	</td>
-</tr></tbody></td></tr></tbody></table></br><a href="{{ path('series_index') }}">Retour à la liste des séries</a></br></br>{{ include('series/_delete_form.html.twig') }}{% endblock %}
+</tr>
+<tr>
+	<th>Add reviews :
+	</th>
+	{% if user is defined %}
+		<td>
+			{% if alreadyRate %}
+				<p>You already gave a grade</p>
+			{% else %}
+				{{ include('series/_form.html.twig') }}
+			{% endif %}
+		</td>
+	{% else %}
+		<td>
+			<a href="{{ path('app_login') }}">You have to login to let a review.</a>
+		</td>
+	{% endif %}
+</tr></tbody></td></tr></tbody></td></tr></tbody></table></br><a href="{{ path('series_index') }}">Retour à la liste des séries</a> </br></br>{{ include('series/_delete_form.html.twig') }}{% endblock %}

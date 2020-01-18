@@ -18,8 +18,13 @@ use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+<<<<<<< HEAD
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
+=======
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\Validator\Constraints\Length;
+>>>>>>> b909cd69c2ffacbd6445058973989011c9297ddf
 
 /**
  * @Route("/series")
@@ -31,6 +36,7 @@ class SeriesController extends AbstractController
      * 
      */
     public function index(PaginatorInterface $paginator,  Request $request): Response
+<<<<<<< HEAD
     {   
        $series = $this->getDoctrine()
        ->getRepository(Series::class);
@@ -72,6 +78,27 @@ class SeriesController extends AbstractController
                 ->orderBy('r.'.$option, 'DESC')
                 ->getQuery();
             }
+=======
+    {
+        $search = "";
+        if ($_SERVER["REQUEST_METHOD"]  === 'POST') {
+            $search = $_POST['search'];
+        }
+        if ($search == "") {
+            $series = $this->getDoctrine()
+                ->getManager()
+                ->getRepository(Series::class)
+                ->findBy(array(), array('id' => 'asc'));
+        } else {
+            $series = $this->getDoctrine()
+                ->getRepository(Series::class);
+
+            $query = $series->createQueryBuilder('a')
+                ->where('a.title LIKE :search')
+                ->setParameter('search', '%' . $search . '%')
+                ->getQuery();
+            $series = $query->getResult();
+>>>>>>> b909cd69c2ffacbd6445058973989011c9297ddf
         }
     }
     if ($option =='Aucun'||  $option == 'id') {
@@ -94,6 +121,7 @@ class SeriesController extends AbstractController
     foreach ($series as $key => $value) {
         $value->setPoster(base64_encode(stream_get_contents($value->getPoster())));
     }
+<<<<<<< HEAD
 
     return $this->render('series/index.html.twig', [
         'series' => $pagination,
@@ -112,27 +140,82 @@ class SeriesController extends AbstractController
         $adr = $_POST['search'];
 
     }
+=======
+>>>>>>> b909cd69c2ffacbd6445058973989011c9297ddf
 
     /**
      * @Route("/new", name="series_new", methods={"GET","POST"})
      */
     public function new(Request $request): Response
     {
-        $series = new Series();
-        $form = $this->createForm(SeriesType::class, $series);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($series);
-            $entityManager->flush();
-
+        if (!$this->getUser() || $this->getUser()->getAdmin() == false) {
             return $this->redirectToRoute('series_index');
+        }
+        $search = "";
+        $message = '';
+        if ($_SERVER["REQUEST_METHOD"]  === 'POST') {
+            $search = $_POST['search'];
+
+            $series = new Series();
+
+            $laSerieImdb = $search;
+            $apikey = "3c43f1be";
+            $message = 'The show already exits';
+            $Testseries = $this->getDoctrine()
+                ->getManager()
+                ->getRepository(Series::class)
+                ->findOneBy(array('imdb' => $laSerieImdb));
+
+            if (!$Testseries) {
+
+                $client = HttpClient::create();
+                $response = $client->request('GET', 'http://www.omdbapi.com/?i=' . $laSerieImdb . '&apikey=' . $apikey);
+
+                $content = $response->toArray();
+
+                $series->setTitle($content['Title']);
+                $series->setPlot($content['Plot']);
+                $series->setImdb($content['imdbID']);
+                $series->setDirector($content['Director']);
+                $series->setYoutubeTrailer('https://www.youtube.com/watch?v=TUEhJmjfC28');
+                $series->setAwards($content['Awards']);
+                if (strlen($content['Year'] == 4)) {
+                    $series->setYearStart(intval($content['Year']));
+                } else {
+                    $series->setYearStart(intval(substr($content['Year'], 0, 4)));
+                    $series->setYearEnd(intval(substr($content['Year'], 4, 8)));
+                }
+
+
+                $clientPoster = HttpClient::create();
+                $responsePoster = $clientPoster->request('GET', 'http://img.omdbapi.com/?i=' . $laSerieImdb . '&apikey=' . $apikey);
+                $contentPoster = $responsePoster->getContent();
+                //$series->setPoster(base64_encode(stream_get_contents($contentPoster)));
+                $series->setPoster($contentPoster);
+
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($series);
+                $em->flush();
+
+
+                $nbSeason = intval($content['totalSeasons']);
+
+                for ($i = 1; $i <= $nbSeason; $i++) {
+                    $season = new Season();
+                    $season->setSeries($series);
+                    $season->setNumber($i);
+                    $em = $this->getDoctrine()->getManager();
+                    $em->persist($season);
+                    $em->flush();
+                }
+
+                $message = 'The show ' . $content['Title'] . 'had been add correctly';
+            }
         }
 
         return $this->render('series/new.html.twig', [
-            'series' => $series,
-            'form' => $form->createView(),
+            'series' => $message,
+            'user' => $this->getUser()
         ]);
     }
 
@@ -147,8 +230,12 @@ class SeriesController extends AbstractController
 
             // On ajoute les champs de l'entité que l'on veut à notre formulaire
             $form2 = $this->get('form.factory')->createBuilder()
+<<<<<<< HEAD
 
             ->getForm();
+=======
+                ->getForm();
+>>>>>>> b909cd69c2ffacbd6445058973989011c9297ddf
 
             if ($request->isMethod('POST')) {
                 $form2->handleRequest($request);
@@ -297,24 +384,18 @@ class SeriesController extends AbstractController
     }
 
     /**
-     * @Route("/{recherche}", name="series_recherche", methods={"GET"})
+     * @Route("/search/{id}/Saison{numSaison}", name="index_episode_show", methods={"GET"})
      */
-    public function recherche(string $recherche): Response
+    public function indexEpisode(Series $serie, int $numSaison, Request $request): Response
     {
+<<<<<<< HEAD
         $series = $this->getDoctrine()
         ->getRepository(Series::class)
         ->findBy(array('title' => $recherche));
+=======
+>>>>>>> b909cd69c2ffacbd6445058973989011c9297ddf
 
-        return $this->render('series/index.html.twig', [
-            'series' => $series
-        ]);
-    }
 
-    /**
-     * @Route("/search/{id}/Saison{numSaison}", name="index_episode_show", methods={"GET"})
-     */
-    public function indexEpisode(Series $serie, int $numSaison): Response
-    {
         $season = $this->getDoctrine()
         ->getRepository(Season::class)
         ->findOneBy(array('series' => $serie, 'number' => $numSaison));
@@ -327,7 +408,7 @@ class SeriesController extends AbstractController
             'series' => $serie,
             'season' => $season,
             'episodes' => $episodes,
-            'user' => $this->getUser()
+            'user' => $this->getUser(),
         ]);
     }
 
@@ -344,11 +425,59 @@ class SeriesController extends AbstractController
         ->getRepository(Episode::class)
         ->findOneBy(array('id' => $idEp));
 
-        return $this->render('series/afficherEpisode.html.twig', [
-            'series' => $serie,
-            'season' => $season,
-            'episode' => $episode,
-            'user' => $this->getUser()
-        ]);
+        if ($this->getUser()) {
+
+            return $this->render('series/afficherEpisode.html.twig', [
+                'series' => $serie,
+                'season' => $season,
+                'episode' => $episode,
+                'user' => $this->getUser()
+            ]);
+        } else {
+            return $this->render('series/afficherEpisode.html.twig', [
+                'series' => $serie,
+                'season' => $season,
+                'episode' => $episode
+            ]);
+        }
+    }
+
+    /**
+     * @Route("/delete/{id}", name="rating_delete", methods={"DELETE", "GET"})
+     */
+    public function deleteRating(Request $request, Rating $rating): Response
+    {
+        if ($this->getUser()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->remove($rating);
+            $entityManager->flush();
+        }
+
+
+        return $this->redirectToRoute('series_index');
+    }
+
+    /**
+     * @Route("/search/{id}/{idSaison}/{idEp}/saw", name="episode_saw", methods={"GET"})
+     */
+    public function sawEpisode(Series $serie, int $idSaison, int $idEp): Response
+    {
+        if ($this->getUser()) {
+            $season = $this->getDoctrine()
+                ->getRepository(Season::class)
+                ->findOneBy(array('id' => $idSaison));
+
+            $episode = $this->getDoctrine()
+                ->getRepository(Episode::class)
+                ->findOneBy(array('id' => $idEp));
+
+            $this->getUser()->addEpisode($episode);
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($this->getUser());
+            $em->flush();
+        }
+
+        return $this->redirectToRoute('index_episode_show', array('id' => $serie->getId(), 'numSaison' => $season->getNumber()));
     }
 }

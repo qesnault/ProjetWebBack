@@ -33,6 +33,11 @@
             </tr>
         </tbody>
     </table>
-
     <a href="{{ path('app_logout') }}">logout</a>
+    <a href="{{ path('mes_series_index') }}">My List</a>
+    {% if user is defined %}
+        {% if user.admin == true %}
+            <a href="{{ path('series_new') }}">Add a serie</a>
+        {% endif %}
+    {% endif %}
 {% endblock %}

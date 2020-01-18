@@ -19,6 +19,8 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoder;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 
 class UserAuthenticator extends AbstractFormLoginAuthenticator
@@ -29,11 +31,12 @@ class UserAuthenticator extends AbstractFormLoginAuthenticator
     private $urlGenerator;
     private $csrfTokenManager;
 
-    public function __construct(EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager)
+    public function __construct(EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder)
     {
         $this->entityManager = $entityManager;
         $this->urlGenerator = $urlGenerator;
         $this->csrfTokenManager = $csrfTokenManager;
+        $this->passwordEncoder = $passwordEncoder;
     }
 
     public function supports(Request $request)
@@ -76,11 +79,22 @@ class UserAuthenticator extends AbstractFormLoginAuthenticator
 
     public function checkCredentials($credentials, UserInterface $user)
     {
-        // Check the user's password or other credentials and return true or false
-        // If there are no credentials to check, you can just return true
-        //throw new \Exception('TODO: check the credentials inside '.__FILE__);
-        
-        return ($user->getPassword() == $credentials['password']);
+        if(empty($this->getPassword($credentials))){
+            return false;
+        } else {
+            return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
+        }
+        //return ($user->getPassword() == $credentials['password']);
+    }
+
+    public function getPassword($credentials)
+    {
+        return $credentials['password'];
+    }
+
+    public function encodePass(UserPasswordEncoderInterface $passwordEncoder, UserInterface $user, string $plainPass){
+        $pass = $passwordEncoder->encodePassword($user, $plainPass);
+        return $pass;
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)

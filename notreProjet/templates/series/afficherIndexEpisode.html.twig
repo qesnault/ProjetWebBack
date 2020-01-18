@@ -1,32 +1,45 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Epiosde index{% endblock %}
+{% block title %}Epiosde index
+{% endblock %}
 
 {% block body %}
-    <h1>Episode</h1>
+	<h1>Episode</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Numéro :</th>
-                <th>Titre :</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for episode in episodes %}
-            <tr>
-                <td>{{ episode.number }}</td>
-                <td>{{ episode.title }}</td>
-                <td>
-                    <a href="{{ path('episode_show', {'id': series.id, 'idSaison': season.id, 'idEp': episode.id}) }}">Voir plus</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="11">Pas d'épisode trouvé</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    <a href="{{ path('series_show', {'id': series.id}) }}">Retour à la série</a>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Numéro :</th>
+				<th>Titre :</th>
+				<th>Show more :</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for episode in episodes %}
+				<tr>
+					<td>{{ episode.number }}</td>
+					<td>{{ episode.title }}</td>
+					<td>
+						<a href="{{ path('episode_show', {'id': series.id, 'idSaison': season.id, 'idEp': episode.id}) }}">Show more</a>
+					</td>
+					<td>
+						{% if user is defined %}
+							{% if user.episode is defined %}
+								{% if episode in user.episode %}
+									<a href="{{ path('episode_saw', {'id': series.id, 'idSaison': season.id, 'idEp': episode.id}) }}">I saw it</a>
+								{% else %}
+									<a href="{{ path('episode_saw', {'id': series.id, 'idSaison': season.id, 'idEp': episode.id}) }}">I didnt saw it</a>
+								{% endif %}
+							{% endif %}
+						{% endif %}
+					</td>
+				</tr>
+			{% else %}
+				<tr>
+					<td colspan="11">No episode found</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<a href="{{ path('series_show', {'id': series.id}) }}">Back to the show</a>
 {% endblock %}
