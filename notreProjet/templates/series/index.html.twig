@@ -5,7 +5,25 @@
 
 {% block body %}
 	<h1>Series index</h1>
+	<form action="{{ path('series_index') }}"  method="post">
+				<select multiple name="option">
+			<option> Genre </option>
+			<option> Year Start </option>
+			<option> Best Rates </option>
+			<option> </option>
+			<option> Aucun </option>
 
+
+    	</select>
+    	<input type="submit" value="confirm" onClick=" {{ path('series_index') }}">
+    </form>
+	{% if printable is not same as("") %}
+     <h1> Voici toutes les séries contenant "{{printable}}" </h1>
+	{% endif %}	
+
+	
+	
+	
 	<table class="table">
 		<thead>
 			<tr>
@@ -19,6 +37,7 @@
 			{% for series in series %}
 				<tr>
 					<td>{{ series.title }}</td>
+
 					<td>{{ series.plot }}</td>
         			<td><img src="data:image/jpeg;base64,{{ series.poster }}"></td>
 					<td>
@@ -26,9 +45,9 @@
 					</td>
 				</tr>
 			{% else %}
-				<tr>
-					<td colspan="11">Pas de série trouvé</td>
-				</tr>
+				
+					<p>Pas de série trouvé</p>
+				
 			{% endfor %}
 		</tbody>
 	</table>

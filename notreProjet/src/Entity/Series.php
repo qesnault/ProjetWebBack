@@ -116,6 +116,13 @@ class Series
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
+     * @ORM\ManyToMany(targetEntity="Rating", mappedBy="series")
+     */
+    private $rate;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
      * @ORM\ManyToMany(targetEntity="User", mappedBy="series")
      */
     private $user;
@@ -135,6 +142,7 @@ class Series
         $this->actor = new \Doctrine\Common\Collections\ArrayCollection();
         $this->country = new \Doctrine\Common\Collections\ArrayCollection();
         $this->genre = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->rate = new \Doctrine\Common\Collections\ArrayCollection();
         $this->user = new \Doctrine\Common\Collections\ArrayCollection();
         $this->season = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -324,6 +332,13 @@ class Series
         }
 
         return $this;
+    }
+    /**
+     * @return Collection|rate[]
+     */
+    public function getRate(): Collection
+    {
+        return $this->rate;
     }
 
     public function removeGenre(Genre $genre): self
