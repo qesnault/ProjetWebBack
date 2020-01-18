@@ -1,28 +1,49 @@
-
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Our Project - Home{% endblock %}</title>
-        {% block stylesheet %}<link rel="stylesheet" type="text/css" href="{{ asset('styleSheets/base.css') }}">{% endblock %}
-    </head>
-    <body>
-        {% block navbar %}
-            {% include 'navbar.html.twig' %}
-        {% endblock %}
-        {% block body %}
+	<head>
+		<meta charset="UTF-8">
+		<title>
+			{% block title %}Our Project - Home
+			{% endblock %}
+		</title>
+		{% block stylesheet %}
+			{#
+						            <link rel="stylesheet" type="text/css" href="{{ asset('styleSheets/base.css') }}"> 
+						            #}
+			<link
+			rel="stylesheet" type="text/css" href="{{ asset('styleSheets/main.css') }}">
+			<!--Import Google Icon Font-->
+			<link
+			href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+			<!--Import materialize.css-->
 
-            {% block presentation %}
-            <div class="content">
-                <h1>Website referencing series</h1>
-                <p>Learning web developpment, we had a project whitch consists on creating a website using a database gathering informations on series.</p>
-                <p>This is the result of this project</p>
-                <p>This website uses a database of series, you can use the search bar to find a serie you want.</p>
-                <p>Theres a login system, click on login to log yourself, if you have no account then click on the "register" link below</p>
-                <p>While logged, you can have access to your informations if you click on your name on the navigation bar.</p>
-                <p>The "information" section tells you more about the creators of the website</p>
-            </div>
-            {% endblock %}
-        {% endblock %}
-    </body>
+			<link
+			rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+			<!--Let browser know website is optimized for mobile-->
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		{% endblock %}
+	</head>
+	<body>
+		{% block navbar %}
+			{% include 'navbar.html.twig' %}
+		{% endblock %}
+		{% block body %}
+
+			{% block presentation %}
+				<div class="content">
+					<h1>Website referencing series</h1>
+					<p>Learning web developpment, we had a project whitch consists on creating a website using a database gathering informations on series.</p>
+					<p>This is the result of this project</p>
+					<p>This website uses a database of series, you can use the search bar to find a serie you want.</p>
+					<p>Theres a login system, click on login to log yourself, if you have no account then click on the "register" link below</p>
+					<p>While logged, you can have access to your informations if you click on your name on the navigation bar.</p>
+					<p>The "information" section tells you more about the creators of the website</p>
+				</div>
+			{% endblock %}
+			{% block scripts %}
+				<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+			{% endblock %}
+		{% endblock %}
+	</body>
 </html>

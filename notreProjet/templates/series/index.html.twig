@@ -4,54 +4,53 @@
 {% endblock %}
 
 {% block body %}
-	<h1>Series index</h1>
-	<form action="{{ path('series_index') }}"  method="post">
-				<select multiple name="option">
-			<option> Genre </option>
-			<option> Year Start </option>
-			<option> Best Rates </option>
-			<option> </option>
-			<option> Aucun </option>
-
-
-    	</select>
-    	<input type="submit" value="confirm" onClick=" {{ path('series_index') }}">
-    </form>
+	<h1 class="center-align">All the series</h1>
+	
+	<div class="center-align">
+	<label for="option-select">Sort by :</label>
+	<select name="option" id="option-select" class="browser-default" form="formsender">
+		<option value="" disabled selected>Choose your option</option>
+		<option value="Genre">Genre</option>
+		<option value="Year Start">Year Start</option>
+		<option value="Best Rates">Best Rates</option>
+	</select>
+	</br>
+	<form action="{{ path('series_index') }}" method="post" id="formsender">
+		<input type="submit" value="Confirm" onclick=" {{ path('series_index') }}">
+	</form>
+	</div>
+	</br>
 	{% if printable is not same as("") %}
-     <h1> Voici toutes les séries contenant "{{printable}}" </h1>
-	{% endif %}	
+		<h1>
+			Voici toutes les séries contenant "{{printable}}"
+		</h1>
+	{% endif %}
 
-	
-	
-	
-	<table class="table">
-		<thead>
-			<tr>
-				<th>Title</th>
-				<th>Plot</th>
-				<th>Poster</th>
-				<th>actions</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for series in series %}
-				<tr>
-					<td>{{ series.title }}</td>
 
-					<td>{{ series.plot }}</td>
-        			<td><img src="data:image/jpeg;base64,{{ series.poster }}"></td>
-					<td>
-						<a class="actions" href="{{ path('series_show', {'id': series.id}, 'relative = true') }}">Voir plus</a>
-					</td>
-				</tr>
-			{% else %}
-				
-					<p>Pas de série trouvé</p>
-				
-			{% endfor %}
-		</tbody>
-	</table>
-		<div class="navigation">
-            {{ knp_pagination_render(series) }}
-        </div>
+	<div class="row">
+		{% for series in series %}
+
+			<div class="col s12 m6 xl3">
+				<div class="card">
+					<div class="card-image">
+						<img class="imageIndex" src="data:image/jpeg;base64,{{ series.poster }}">
+						<span class="card-title">{{ series.title }}</span>
+					</div>
+					<div class="card-content">
+						<p>{{ series.plot }}</p>
+					</div>
+					<div class="card-action">
+						<a href="{{ path('series_show', {'id': series.id}, 'relative = true') }}">Show more</a>
+					</div>
+				</div>
+			</div>
+		{% else %}
+
+			<p>Pas de série trouvé</p>
+
+		{% endfor %}
+	</div>
+	<div class="navigation pagination center-align">
+		{{ knp_pagination_render(series) }}
+	</div>
 {% endblock %}

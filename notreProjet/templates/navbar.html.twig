@@ -1,23 +1,40 @@
 <nav class="menu">
-	<a href="/" class="nav">Home</a>
+	<div class="nav-wrapper">
+		<div class="brand-logo right">
+			<form method="post" action="{{ path('series_index') }}">
+				<div class="input-field">
+					{#
+											<input type="text" placeholder="Search.." name="search">
+											<input type="submit" value="GO >>" class="search" onclick=" {{ path('series_index') }} ">
+											#}
+					<input id="search" type="search" name="search" required>
+					<label class="label-icon">
+						<i class="material-icons">search</i>
+					</label>
+					<i class="material-icons">close</i>
+				</div>
+			</form>
+		</div>
+		<ul>
+			<li>
+				<a href="/" class="nav-">Home</a>
+			</li>
+			<li>
+				<a href="{{path('series_index')}}" class="nav">Series</a>
+			</li>
+			{# à rajouter: un lien vers les users losrque admin" #}
+			<li>
+				<a href="{{path('infos')}}" class="nav">Others</a>
+			</li>
+			<li>
+				{% if user.name is defined %}
+					<a href="{{ path('user_show', {'id' : user.id })}}">{{ user.name }}</a>
+				{% else %}
 
-	<a href="{{path('series_index')}}" class="nav">Series</a>
+					<a href="{{path('app_login')}}" class="nav">Sing In</a>
 
-	{# à rajouter: un lien vers les users losrque admin" #}
-
-	<a href="{{path('infos')}}" class="nav">Others</a>
-
-	{% if user.name is defined %}
-		<a href="{{ path('user_show', {'id' : user.id })}}">{{ user.name }}</a>
-	{% else %}
-
-	<a href="{{path('app_login')}}" class="nav">Sing In</a>
-	
-	{% endif %}
-
-		<form method="post" action="{{ path('series_index') }}">
- 			<input type="text" placeholder="Search.." name="search">
-        	<input type="submit" value="GO >>" class="search" onClick=" {{ path('series_index') }} ">
-        </form> 
-
+				{% endif %}
+			</li>
+		</ul>
+	</div>
 </nav>

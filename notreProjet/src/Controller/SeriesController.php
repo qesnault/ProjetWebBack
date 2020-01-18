@@ -18,13 +18,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-<<<<<<< HEAD
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-
-=======
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Validator\Constraints\Length;
->>>>>>> b909cd69c2ffacbd6445058973989011c9297ddf
 
 /**
  * @Route("/series")
@@ -36,7 +32,6 @@ class SeriesController extends AbstractController
      * 
      */
     public function index(PaginatorInterface $paginator,  Request $request): Response
-<<<<<<< HEAD
     {   
        $series = $this->getDoctrine()
        ->getRepository(Series::class);
@@ -78,27 +73,6 @@ class SeriesController extends AbstractController
                 ->orderBy('r.'.$option, 'DESC')
                 ->getQuery();
             }
-=======
-    {
-        $search = "";
-        if ($_SERVER["REQUEST_METHOD"]  === 'POST') {
-            $search = $_POST['search'];
-        }
-        if ($search == "") {
-            $series = $this->getDoctrine()
-                ->getManager()
-                ->getRepository(Series::class)
-                ->findBy(array(), array('id' => 'asc'));
-        } else {
-            $series = $this->getDoctrine()
-                ->getRepository(Series::class);
-
-            $query = $series->createQueryBuilder('a')
-                ->where('a.title LIKE :search')
-                ->setParameter('search', '%' . $search . '%')
-                ->getQuery();
-            $series = $query->getResult();
->>>>>>> b909cd69c2ffacbd6445058973989011c9297ddf
         }
     }
     if ($option =='Aucun'||  $option == 'id') {
@@ -121,7 +95,6 @@ class SeriesController extends AbstractController
     foreach ($series as $key => $value) {
         $value->setPoster(base64_encode(stream_get_contents($value->getPoster())));
     }
-<<<<<<< HEAD
 
     return $this->render('series/index.html.twig', [
         'series' => $pagination,
@@ -129,19 +102,6 @@ class SeriesController extends AbstractController
         'printable' => $search
     ]);
 }
-    /**
-     * @Route("/search", name="navbar_action", methods={"GET","POST"})
-     */
-    public function navbar_action(Request $r)
-    {
-        $request=$this->get('r');
-
-
-        $adr = $_POST['search'];
-
-    }
-=======
->>>>>>> b909cd69c2ffacbd6445058973989011c9297ddf
 
     /**
      * @Route("/new", name="series_new", methods={"GET","POST"})
@@ -230,12 +190,8 @@ class SeriesController extends AbstractController
 
             // On ajoute les champs de l'entité que l'on veut à notre formulaire
             $form2 = $this->get('form.factory')->createBuilder()
-<<<<<<< HEAD
 
             ->getForm();
-=======
-                ->getForm();
->>>>>>> b909cd69c2ffacbd6445058973989011c9297ddf
 
             if ($request->isMethod('POST')) {
                 $form2->handleRequest($request);
@@ -388,12 +344,6 @@ class SeriesController extends AbstractController
      */
     public function indexEpisode(Series $serie, int $numSaison, Request $request): Response
     {
-<<<<<<< HEAD
-        $series = $this->getDoctrine()
-        ->getRepository(Series::class)
-        ->findBy(array('title' => $recherche));
-=======
->>>>>>> b909cd69c2ffacbd6445058973989011c9297ddf
 
 
         $season = $this->getDoctrine()
