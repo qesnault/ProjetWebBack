@@ -1,3 +1,4 @@
 # S3ProgWeb
 
-Projet Prog Web de S3.
+Projet de progragmation web serveur de S3.
+Consigne du projet : https://gregwar.com/s3web/project.html
